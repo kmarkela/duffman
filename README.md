@@ -1,1 +1,1 @@
-# duffman
+# DUFFMAN: Diagnostic Utility for Fuzzing and Fault Management of API Nodes
