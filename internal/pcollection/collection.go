@@ -1,4 +1,4 @@
-package parser
+package pcollection
 
 type RawCollection struct {
 	Items    []Item     `json:"item"`
@@ -37,14 +37,24 @@ type Body struct {
 	Raw        string     `json:"raw,omitempty"`
 	FormData   []KeyValue `json:"formdata,omitempty"`
 	URLEncoded []KeyValue `json:"urlencoded,omitempty"`
+	Options    Options    `json:"options"`
+}
+
+type Options struct {
+	Raw Raw `json:"raw"`
+}
+
+type Raw struct {
+	Lang string `json:"language"`
+}
+
+type Enviroment struct {
+	Values []KeyValue `json:"values"`
 }
 
 // filtered out version
 type Collection struct {
 	Variables []KeyValue
 	Requests  []*Request
-}
-
-type Enviroment struct {
-	Values []KeyValue `json:"values"`
+	Env       *Enviroment
 }

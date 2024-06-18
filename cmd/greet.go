@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/fatih/color"
 )
 
-func Greet() {
+func greet() {
 	nameASCIIFirst := `
  ####                                       ###        
  ######                                   #######      
@@ -35,5 +37,6 @@ func Greet() {
  #####                      ####                       
 	`
 	color.New(color.FgBlue).Print(nameASCIIFirst)
+	fmt.Println()
 
 }
