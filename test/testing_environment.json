@@ -1,0 +1,27 @@
+{
+	"id": "f22cb6ea-1138-41fe-b7b3-b5f43e8888dc",
+	"name": "New Environment",
+	"values": [
+		{
+			"key": "env1",
+			"value": "9999",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "env2",
+			"value": "8888",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "env3",
+			"value": "7777",
+			"type": "secret",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2024-06-19T08:37:57.093Z",
+	"_postman_exported_using": "Postman/11.2.11-240618-0446"
+}

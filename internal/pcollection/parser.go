@@ -9,6 +9,11 @@ import (
 
 func CollFromJson(colF, envF string) (*Collection, error) {
 
+	return parseJSONs(colF, envF)
+}
+
+func parseJSONs(colF, envF string) (*Collection, error) {
+
 	// Open the JSON file
 	jsonC, err := os.Open(colF)
 	if err != nil {
@@ -43,7 +48,7 @@ func CollFromJson(colF, envF string) (*Collection, error) {
 		return nil, fmt.Errorf("cannot unmarshal env. Err: %s", err)
 	}
 
-	collection.Env = env
+	collection.Env = env.Values
 
 	return collection, nil
 }

@@ -1,0 +1,355 @@
+{
+	"info": {
+		"_postman_id": "904368fe-6cc2-450c-a5c9-a8e18f63c511",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36214428"
+	},
+	"item": [
+		{
+			"name": "t1",
+			"item": [
+				{
+					"name": "t2",
+					"item": [
+						{
+							"name": "tt",
+							"item": [
+								{
+									"name": "ttt",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"test1\":[{\n    \"test2\": \"1\",\n    \"test3\": [1,2]\n}\n]}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "foo.bar/3-sub/post/raw-json",
+											"host": [
+												"foo",
+												"bar"
+											],
+											"path": [
+												"3-sub",
+												"post",
+												"raw-json"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "t5",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "testing123",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "foo.bar/2-sub/post/raw-text",
+									"host": [
+										"foo",
+										"bar"
+									],
+									"path": [
+										"2-sub",
+										"post",
+										"raw-text"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "t6",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"test\":1}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "foo.bar/2-sub/post/raw_params?testing-param=123456",
+									"host": [
+										"foo",
+										"bar"
+									],
+									"path": [
+										"2-sub",
+										"post",
+										"raw_params"
+									],
+									"query": [
+										{
+											"key": "testing-param",
+											"value": "123456"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "t7",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "post",
+											"value": "123456",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "foo.bar/2-sub/post/form_params?testing-param=123456",
+									"host": [
+										"foo",
+										"bar"
+									],
+									"path": [
+										"2-sub",
+										"post",
+										"form_params"
+									],
+									"query": [
+										{
+											"key": "testing-param",
+											"value": "123456"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "t8",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-testng-123",
+										"value": "4589657",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "params",
+											"value": "123456",
+											"type": "text"
+										},
+										{
+											"key": "param2",
+											"value": "987654321",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "foo.bar/2-sub/post/urlen_params_header?testing-param=123456",
+									"host": [
+										"foo",
+										"bar"
+									],
+									"path": [
+										"2-sub",
+										"post",
+										"urlen_params_header"
+									],
+									"query": [
+										{
+											"key": "testing-param",
+											"value": "123456"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "t3",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "foo.bar/1-sub/get/var/:var1/:var2?param1=pppp",
+							"host": [
+								"foo",
+								"bar"
+							],
+							"path": [
+								"1-sub",
+								"get",
+								"var",
+								":var1",
+								":var2"
+							],
+							"query": [
+								{
+									"key": "param1",
+									"value": "pppp"
+								}
+							],
+							"variable": [
+								{
+									"key": "var1",
+									"value": "1111"
+								},
+								{
+									"key": "var2",
+									"value": "2222"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "te",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "foo.bar/get/var/:var1/:var2?param1=pppp",
+					"host": [
+						"foo",
+						"bar"
+					],
+					"path": [
+						"get",
+						"var",
+						":var1",
+						":var2"
+					],
+					"query": [
+						{
+							"key": "param1",
+							"value": "pppp"
+						}
+					],
+					"variable": [
+						{
+							"key": "var1",
+							"value": "1111"
+						},
+						{
+							"key": "var2",
+							"value": "2222"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "te Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "foo.bar/get/variable/:var1/:var2?vavar1={{testing}}&vavar2={{$guid}}",
+					"host": [
+						"foo",
+						"bar"
+					],
+					"path": [
+						"get",
+						"variable",
+						":var1",
+						":var2"
+					],
+					"query": [
+						{
+							"key": "vavar1",
+							"value": "{{testing}}"
+						},
+						{
+							"key": "vavar2",
+							"value": "{{$guid}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "var1",
+							"value": "1111"
+						},
+						{
+							"key": "var2",
+							"value": "2222"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "env",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "foo.bar/env?env1={{env1}}&env2={{env2}}&env3={{env3}}",
+					"host": [
+						"foo",
+						"bar"
+					],
+					"path": [
+						"env"
+					],
+					"query": [
+						{
+							"key": "env1",
+							"value": "{{env1}}"
+						},
+						{
+							"key": "env2",
+							"value": "{{env2}}"
+						},
+						{
+							"key": "env3",
+							"value": "{{env3}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "testing",
+			"value": "123456"
+		}
+	]
+}

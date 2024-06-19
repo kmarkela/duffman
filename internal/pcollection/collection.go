@@ -1,60 +1,20 @@
 package pcollection
 
-type RawCollection struct {
-	Items    []Item     `json:"item"`
-	Variable []KeyValue `json:"variable,omitempty"`
-}
-
-type KeyValue struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-type Item struct {
-	Name    string   `json:"name"`
-	Item    []Item   `json:"item,omitempty"`
-	Request *Request `json:"request,omitempty"`
-}
-
-type Request struct {
-	Method string     `json:"method"`
-	Header []KeyValue `json:"header,omitempty"`
-	Body   Body       `json:"body,omitempty"`
-	URL    URL        `json:"url"`
-}
-
-type URL struct {
-	Raw       string     `json:"raw"`
-	Protocol  string     `json:"protocol"`
-	Host      []string   `json:"host"`
-	Path      []string   `json:"path"`
-	Query     []KeyValue `json:"query,omitempty"`
-	Variables []KeyValue `json:"variable"`
-}
-
-type Body struct {
-	Mode       string     `json:"mode"`
-	Raw        string     `json:"raw,omitempty"`
-	FormData   []KeyValue `json:"formdata,omitempty"`
-	URLEncoded []KeyValue `json:"urlencoded,omitempty"`
-	Options    Options    `json:"options"`
-}
-
-type Options struct {
-	Raw Raw `json:"raw"`
-}
-
-type Raw struct {
-	Lang string `json:"language"`
-}
-
-type Enviroment struct {
-	Values []KeyValue `json:"values"`
-}
-
 // filtered out version
 type Collection struct {
 	Variables []KeyValue
-	Requests  []*Request
-	Env       *Enviroment
+	Requests  []*Req
+	Env       []KeyValue
+}
+
+type Req struct {
+	Headers     map[string]string
+	Body        string
+	ContentType string
+	Parameters  Parameters
+}
+
+type Parameters struct {
+	Get  map[string]string
+	Post map[string]string
 }
