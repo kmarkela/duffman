@@ -7,31 +7,27 @@ import (
 	"os"
 )
 
-func CollFromJson(colF, envF string) (*Collection, error) {
+func New(colF, envF string) (Collection, error) {
 
-	return parseJSONs(colF, envF)
-}
-
-func parseJSONs(colF, envF string) (*Collection, error) {
+	var collection = Collection{}
 
 	jsonC, err := os.Open(colF)
 	if err != nil {
-		return nil, fmt.Errorf("cannot open Collection file. Err: %s", err)
+		return collection, fmt.Errorf("cannot open Collection file. Err: %s", err)
 	}
 	defer jsonC.Close()
 
 	byteV, _ := io.ReadAll(jsonC)
 	var rawCollection RawCollection
 	if err := json.Unmarshal(byteV, &rawCollection); err != nil {
-		return nil, fmt.Errorf("cannot unmarshal collection. Err: %s", err)
+		return collection, fmt.Errorf("cannot unmarshal collection. Err: %s", err)
 	}
 
-	var collection = &Collection{}
 	collection.Variables = rawCollection.Variable
 
 	reqLt, err := getReqLt(&rawCollection)
 	if err != nil {
-		return nil, fmt.Errorf("cannot process Collection. Err: %s", err)
+		return collection, fmt.Errorf("cannot process Collection. Err: %s", err)
 	}
 
 	collection.Requests = reqLt
@@ -47,13 +43,13 @@ func parseJSONs(colF, envF string) (*Collection, error) {
 
 	jsonE, err := os.Open(envF)
 	if err != nil {
-		return nil, fmt.Errorf("cannot open Enviroment file. Err: %s", err)
+		return collection, fmt.Errorf("cannot open Enviroment file. Err: %s", err)
 	}
 	defer jsonE.Close()
 
 	byteE, _ := io.ReadAll(jsonE)
 	if err := json.Unmarshal(byteE, &collection.Env); err != nil {
-		return nil, fmt.Errorf("cannot unmarshal env. Err: %s", err)
+		return collection, fmt.Errorf("cannot unmarshal env. Err: %s", err)
 	}
 
 	return collection, nil
