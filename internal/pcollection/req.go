@@ -22,6 +22,9 @@ func buildReq(r *Request) Req {
 	// parse params
 	get := make(map[string]string)
 	for _, v := range r.URL.Query {
+		if v.Key == "" {
+			continue
+		}
 		get[strings.ToLower(v.Key)] = v.Value
 	}
 
