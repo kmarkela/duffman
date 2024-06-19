@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"log"
+	"strings"
 
 	"github.com/kmarkela/duffman/internal/output"
 	"github.com/kmarkela/duffman/internal/pcollection"
@@ -30,12 +31,22 @@ var parseCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		output.PrintCol(output.Brief, &coll)
+		o, _ := cmd.Flags().GetString("output")
+
+		otype := output.Req
+		switch strings.ToLower(o) {
+		case "brief":
+			otype = output.Brief
+		case "full":
+			otype = output.Full
+		}
+
+		output.PrintCol(otype, &coll)
 
 	},
 }
 
 func init() {
-	parseCmd.Flags().Bool("br", false, "brief")
+	parseCmd.Flags().StringP("output", "", "req", "output type. Possible values: brief, req, full")
 	rootCmd.AddCommand(parseCmd)
 }

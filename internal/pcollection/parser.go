@@ -32,11 +32,6 @@ func New(colF, envF string) (Collection, error) {
 
 	collection.Requests = reqLt
 
-	// collection, err := buildColl(&rawCollection)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("cannot process Collection. Err: %s", err)
-	// }
-
 	if envF == "" {
 		return collection, nil
 	}
@@ -48,9 +43,12 @@ func New(colF, envF string) (Collection, error) {
 	defer jsonE.Close()
 
 	byteE, _ := io.ReadAll(jsonE)
-	if err := json.Unmarshal(byteE, &collection.Env); err != nil {
+	var env Enviroment
+	if err := json.Unmarshal(byteE, &env); err != nil {
 		return collection, fmt.Errorf("cannot unmarshal env. Err: %s", err)
 	}
+
+	collection.Env = env.Values
 
 	return collection, nil
 }
