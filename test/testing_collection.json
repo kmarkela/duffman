@@ -22,7 +22,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\"test1\":[{\n    \"test2\": \"1\",\n    \"test3\": [1,2]\n}\n]}",
+											"raw": "{\"test1\":[{\n    \"test2\": \"1\",\n    \"test3\": [1,2]\n}\n], \"test2\": {\n    \"test3\": {\n        \"test4\": 8\n    }\n}}",
 											"options": {
 												"raw": {
 													"language": "json"

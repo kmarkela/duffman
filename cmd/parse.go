@@ -36,9 +36,13 @@ var parseCmd = &cobra.Command{
 		for _, v := range coll.Variables {
 			fmt.Printf("%s: %s\n", v.Key, v.Value)
 		}
+		fmt.Println("Env:")
+		for _, v := range coll.Env {
+			fmt.Printf("%s: %s\n", v.Key, v.Value)
+		}
 		fmt.Println("Requests:")
 		for _, v := range coll.Requests {
-			fmt.Printf("Method: %s\n URL: %s\n, body: %v\n, headers: %v\n", v.Method, v.URL.Raw, v.Body, v.Header)
+			fmt.Printf("Method: %s\nURL: %s\nbody: %v\nheaders: %v\nGET: %v\nPost: %v", v.Method, v.URL, v.Body, v.Headers, v.Parameters.Get, v.Parameters.Post)
 			fmt.Println("===========================")
 		}
 
@@ -49,7 +53,3 @@ func init() {
 	parseCmd.Flags().Bool("br", false, "brief")
 	rootCmd.AddCommand(parseCmd)
 }
-
-// func printBrif() {
-
-// }

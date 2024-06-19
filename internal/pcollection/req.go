@@ -7,7 +7,7 @@ import (
 
 func buildReq(r *Request) Req {
 	req := Req{}
-
+	req.Headers = make(map[string]string)
 	// parse headers
 	for _, v := range r.Header {
 		req.Headers[strings.ToLower(v.Key)] = v.Value
@@ -29,6 +29,7 @@ func buildReq(r *Request) Req {
 
 	req.ContentType = ct
 	req.Body = body
+	req.Method = r.Method
 
 	return req
 
@@ -42,7 +43,7 @@ func resolveURLVar(url URL) string {
 	u := url.Raw
 	for _, v := range url.Variables {
 		key := fmt.Sprintf(":%s", v.Key)
-		u = strings.ReplaceAll(url.Raw, key, v.Value)
+		u = strings.ReplaceAll(u, key, v.Value)
 	}
 
 	return u
