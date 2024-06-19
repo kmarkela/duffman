@@ -14,7 +14,6 @@ func CollFromJson(colF, envF string) (*Collection, error) {
 
 func parseJSONs(colF, envF string) (*Collection, error) {
 
-	// Open the JSON file
 	jsonC, err := os.Open(colF)
 	if err != nil {
 		return nil, fmt.Errorf("cannot open Collection file. Err: %s", err)
@@ -27,10 +26,20 @@ func parseJSONs(colF, envF string) (*Collection, error) {
 		return nil, fmt.Errorf("cannot unmarshal collection. Err: %s", err)
 	}
 
-	collection, err := rawCollection.filter()
+	var collection = &Collection{}
+	collection.Variables = rawCollection.Variable
+
+	reqLt, err := getReqLt(&rawCollection)
 	if err != nil {
 		return nil, fmt.Errorf("cannot process Collection. Err: %s", err)
 	}
+
+	collection.Requests = reqLt
+
+	// collection, err := buildColl(&rawCollection)
+	// if err != nil {
+	// 	return nil, fmt.Errorf("cannot process Collection. Err: %s", err)
+	// }
 
 	if envF == "" {
 		return collection, nil
@@ -43,31 +52,27 @@ func parseJSONs(colF, envF string) (*Collection, error) {
 	defer jsonE.Close()
 
 	byteE, _ := io.ReadAll(jsonE)
-	var env *Enviroment
-	if err := json.Unmarshal(byteE, &env); err != nil {
+	if err := json.Unmarshal(byteE, &collection.Env); err != nil {
 		return nil, fmt.Errorf("cannot unmarshal env. Err: %s", err)
 	}
-
-	collection.Env = env.Values
 
 	return collection, nil
 }
 
-// Simplify/Filter sub-layers of the collection
-func (rc *RawCollection) filter() (*Collection, error) {
+func getReqLt(rc *RawCollection) ([]Req, error) {
 
-	var col *Collection = &Collection{}
-	col.Variables = rc.Variable
+	var rlt []Req
 
 	for _, v := range rc.Items {
-		tr, err := v.filter()
+		tr, err := v.i2ReqLt()
 		if err != nil {
 			return nil, err
 		}
-		// fmt.Println(tr)
-		col.Requests = append(col.Requests, tr...)
+		rlt = append(rlt, tr...)
 	}
-	return col, nil
+
+	return rlt, nil
+
 }
 
 func (c *Collection) ResolveVars() {}

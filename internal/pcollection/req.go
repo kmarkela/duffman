@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func buildReq(r Request) Req {
+func buildReq(r *Request) Req {
 	req := Req{}
 
 	// parse headers

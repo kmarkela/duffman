@@ -1,10 +1,10 @@
 package pcollection
 
-func (i *Item) filter() ([]*Request, error) {
-	var lr []*Request
+func (i *Item) i2ReqLt() ([]Req, error) {
+	var lr []Req
 
 	if i.Request != nil {
-		lr = append(lr, i.Request)
+		lr = append(lr, buildReq(i.Request))
 	}
 
 	if i.Item == nil {
@@ -12,7 +12,7 @@ func (i *Item) filter() ([]*Request, error) {
 	}
 
 	for _, v := range i.Item {
-		tr, err := v.filter()
+		tr, err := v.i2ReqLt()
 		if err != nil {
 			return nil, err
 		}

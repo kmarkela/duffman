@@ -26,19 +26,19 @@ func UnmarshalJSONBody(s string) (map[string]string, error) {
 		}
 	}
 
-	result = parseJSON(data, "")
+	result = parseJSONBody(data, "")
 
 	return result, nil
 }
 
-func parseJSON(data map[string]interface{}, prefix string) map[string]string {
+func parseJSONBody(data map[string]interface{}, prefix string) map[string]string {
 	result := make(map[string]string)
 
 	for key, value := range data {
 		switch v := value.(type) {
 		case map[string]interface{}:
 			// Nested object, recurse
-			nestedResult := parseJSON(v, prefix+key+".")
+			nestedResult := parseJSONBody(v, prefix+key+".")
 			for nestedKey, nestedValue := range nestedResult {
 				result[nestedKey] = nestedValue
 			}

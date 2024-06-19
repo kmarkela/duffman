@@ -3,7 +3,7 @@ package pcollection
 // filtered out version
 type Collection struct {
 	Variables []KeyValue
-	Requests  []*Req
+	Requests  []Req
 	Env       []KeyValue
 }
 
