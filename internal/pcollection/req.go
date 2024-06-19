@@ -16,6 +16,9 @@ func buildReq(r *Request) Req {
 	// url
 	req.URL = resolveURLVar(r.URL)
 
+	//remove get parameters
+	req.URL = strings.Split(req.URL, "?")[0]
+
 	// parse params
 	get := make(map[string]string)
 	for _, v := range r.URL.Query {
