@@ -13,7 +13,7 @@ var rootCmd = &cobra.Command{
 	Short: "Fuzzer for Postman collections",
 	Long:  `Diagnostic Utility for Fuzzing and Fault Management of API Nodes`,
 	Run: func(cmd *cobra.Command, args []string) {
-		parseCmd.Execute()
+		cmd.Root().Help()
 	},
 }
 
