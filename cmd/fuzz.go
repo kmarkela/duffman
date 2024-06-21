@@ -66,12 +66,12 @@ var fuzzCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		f, err := fuzz.New(workers, maxReq, headers, excludeParam, parameters, fname, proxy, verbose)
+		f, err := fuzz.New(workers, maxReq, headers, excludeParam, parameters, proxy, verbose)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		f.Run(&coll)
+		f.Run(&coll, fname)
 
 	},
 }
