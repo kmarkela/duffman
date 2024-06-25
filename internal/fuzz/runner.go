@@ -34,48 +34,43 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
 	var wg sync.WaitGroup
 	var wq = make(chan workUnit)
+	// start workers
+	for i := 0; i < f.workers; i++ {
+		wg.Add(1)
+		go startWorker(&wg, wq, f.tr)
+	}
 
 	for _, v := range col.Requests {
 		resolveVars(col.Env, col.Variables, &v)
 
 		for key := range v.Parameters.Get {
-
-			for _, word := range wordlist {
-
-				if rateLimiter != nil {
-					<-rateLimiter // Wait for rate limit if provided
-				}
-
-				wq <- workUnit{
-					r:       &v,
-					word:    word,
-					param:   key,
-					parBody: false,
-				}
-			}
+			distrWU(key, wordlist, &v, rateLimiter, wq, false)
 
 		}
 
 		for key := range v.Parameters.Post {
-
-			for _, word := range wordlist {
-
-				if rateLimiter != nil {
-					<-rateLimiter // Wait for rate limit if provided
-				}
-
-				wq <- workUnit{
-					r:       &v,
-					word:    word,
-					param:   key,
-					parBody: true,
-				}
-			}
-
+			distrWU(key, wordlist, &v, rateLimiter, wq, true)
 		}
-
 	}
 
+	wg.Wait()
+}
+
+func distrWU(key string, wordlist []string, r *pcollection.Req, rl <-chan time.Time, wq chan workUnit, parBody bool) {
+
+	for _, word := range wordlist {
+
+		if rl != nil {
+			<-rl // Wait for rate limit if provided
+		}
+
+		wq <- workUnit{
+			r:       r,
+			word:    word,
+			param:   key,
+			parBody: parBody,
+		}
+	}
 }
 
 func pwlist(filename string) ([]string, error) {
