@@ -5,19 +5,16 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
 type Fuzzer struct {
-	workers, maxReq           int
-	excludeParams, parameters []string
-	verbose                   bool
-	headers                   map[string]string
-	tr                        *http.Transport
+	workers, maxReq int
+	verbose         bool
+	headers         map[string]string
+	tr              *http.Transport
 }
 
-func New(workers, maxReq int, headers, excludeParams, parameters []string, proxy string, verbose bool) (Fuzzer, error) {
+func New(workers, maxReq int, headers []string, proxy string, verbose bool) (Fuzzer, error) {
 
 	var fuzzer = Fuzzer{}
 
@@ -33,13 +30,11 @@ func New(workers, maxReq int, headers, excludeParams, parameters []string, proxy
 		return fuzzer, err
 	}
 	return Fuzzer{
-		headers:       h,
-		workers:       workers,
-		maxReq:        maxReq,
-		excludeParams: excludeParams,
-		parameters:    parameters,
-		verbose:       v,
-		tr:            &http.Transport{Proxy: http.ProxyURL(proxyUrl)},
+		headers: h,
+		workers: workers,
+		maxReq:  maxReq,
+		verbose: verbose,
+		tr:      &http.Transport{Proxy: http.ProxyURL(proxyUrl)},
 	}, nil
 }
 
@@ -55,13 +50,4 @@ func pheaders(headers []string) (map[string]string, error) {
 	}
 
 	return rh, nil
-}
-
-func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
-
-	// read wordlist
-	wordlist, err := pwlist(filename)
-	if err != nil {
-		return nil, err
-	}
 }
