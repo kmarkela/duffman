@@ -43,6 +43,10 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 	for _, v := range col.Requests {
 		resolveVars(col.Env, col.Variables, &v)
 
+		for hk, hv := range f.headers {
+			v.Headers[hk] = hv
+		}
+
 		for key := range v.Parameters.Get {
 			distrWU(key, wordlist, &v, rateLimiter, wq, false)
 
@@ -53,6 +57,7 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 		}
 	}
 
+	close(wq)
 	wg.Wait()
 }
 
