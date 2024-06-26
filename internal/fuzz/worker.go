@@ -1,12 +1,15 @@
 package fuzz
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
 func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, tr *http.Transport) {
@@ -78,10 +81,12 @@ func encodeBody(wu workUnit) (io.Reader, error) {
 
 	// encode json
 	if wu.r.ContentType == "application/json" {
-
+		b := pcollection.MarshalJSONBody(wu.r.Parameters.Post)
+		return bytes.NewBuffer(b), nil
 	}
 
 	// TODO: encode multipart
 
+	// unknown content type
 	return strings.NewReader(wu.r.Body), fmt.Errorf("no encoder for: %s", wu.r.ContentType)
 }
