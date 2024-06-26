@@ -12,7 +12,7 @@ import (
 )
 
 type workUnit struct {
-	r           *pcollection.Req
+	r           pcollection.Req
 	word, param string
 	parBody     bool
 }
@@ -48,12 +48,12 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 		}
 
 		for key := range v.Parameters.Get {
-			distrWU(key, wordlist, &v, rateLimiter, wq, false)
+			distrWU(key, wordlist, v, rateLimiter, wq, false)
 
 		}
 
 		for key := range v.Parameters.Post {
-			distrWU(key, wordlist, &v, rateLimiter, wq, true)
+			distrWU(key, wordlist, v, rateLimiter, wq, true)
 		}
 	}
 
@@ -61,7 +61,7 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 	wg.Wait()
 }
 
-func distrWU(key string, wordlist []string, r *pcollection.Req, rl <-chan time.Time, wq chan workUnit, parBody bool) {
+func distrWU(key string, wordlist []string, r pcollection.Req, rl <-chan time.Time, wq chan workUnit, parBody bool) {
 
 	for _, word := range wordlist {
 

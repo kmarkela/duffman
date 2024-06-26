@@ -42,6 +42,8 @@ func parseJSONBody(data map[string]interface{}, prefix string) map[string]string
 			for nestedKey, nestedValue := range nestedResult {
 				result[nestedKey] = nestedValue
 			}
+		// TODO: add parse of list
+		// case []interface{}:
 		default:
 			// Leaf node, add to the result map
 			result[prefix+key] = fmt.Sprintf("%v", value)
