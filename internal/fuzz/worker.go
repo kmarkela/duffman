@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 )
@@ -23,7 +24,7 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, tr *http.Transport) {
 			continue
 		}
 
-		body := encodeBody(wu)
+		body, _ := encodeBody(wu)
 		endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
 		doRequest(endpoint, body, wu, tr)
 	}
@@ -62,6 +63,25 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 	return nil
 }
 
-func encodeBody(wu workUnit) io.Reader {
-	return nil
+func encodeBody(wu workUnit) (io.Reader, error) {
+
+	wu.r.Parameters.Post[wu.param] = wu.word
+
+	// encode Form
+	if strings.HasPrefix(wu.r.ContentType, "application/x-www-form-urlencoded") {
+		form := url.Values{}
+		for k, v := range wu.r.Parameters.Post {
+			form.Add(k, v)
+		}
+		return strings.NewReader(form.Encode()), nil
+	}
+
+	// encode json
+	if wu.r.ContentType == "application/json" {
+
+	}
+
+	// TODO: encode multipart
+
+	return strings.NewReader(wu.r.Body), fmt.Errorf("no encoder for: %s", wu.r.ContentType)
 }
