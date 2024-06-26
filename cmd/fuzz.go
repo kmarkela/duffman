@@ -74,6 +74,7 @@ func init() {
 	fuzzCmd.MarkFlagRequired("wordlist")
 	fuzzCmd.Flags().StringP("proxy", "p", "", "proxy")
 	fuzzCmd.Flags().IntP("maxReq", "m", 0, "max amount of requests per second")
+	fuzzCmd.Flags().IntP("workers", "w", 10, "amount of workers")
 	fuzzCmd.Flags().StringSlice("headers", []string{}, "replace header if exists, add if it wasn't in original request")
 
 	rootCmd.AddCommand(fuzzCmd)
