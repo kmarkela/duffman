@@ -20,7 +20,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.PersistentFlags().BoolP("verbose", "V", false, "Verbose")
 	rootCmd.PersistentFlags().StringP("collection", "f", "", "path to collection file")
-	rootCmd.MarkFlagRequired("collectionFile")
+	rootCmd.MarkFlagRequired("collection")
 	rootCmd.PersistentFlags().StringP("enviroment", "e", "", "path to enviroment file")
 	rootCmd.Root().CompletionOptions.DisableDefaultCmd = true
 }
