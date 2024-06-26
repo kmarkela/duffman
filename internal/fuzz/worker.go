@@ -59,8 +59,10 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 
 	res, err := client.Do(req)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
+
 	defer res.Body.Close()
 
 	return nil
