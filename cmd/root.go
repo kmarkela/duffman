@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const version = "v0.2.1-alpha"
+const version = "v0.3.0-alpha"
 
 var rootCmd = &cobra.Command{
 	Use:   "DuffMan",
@@ -19,9 +19,9 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	rootCmd.PersistentFlags().BoolP("verbose", "V", false, "Verbose")
-	rootCmd.PersistentFlags().StringP("collectionFile", "f", "", "path to collection file")
+	rootCmd.PersistentFlags().StringP("collection", "f", "", "path to collection file")
 	rootCmd.MarkFlagRequired("collectionFile")
-	rootCmd.PersistentFlags().StringP("enviromentFile", "e", "", "path to enviroment file")
+	rootCmd.PersistentFlags().StringP("enviroment", "e", "", "path to enviroment file")
 	rootCmd.Root().CompletionOptions.DisableDefaultCmd = true
 }
 

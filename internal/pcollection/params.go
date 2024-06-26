@@ -51,8 +51,51 @@ func parseJSONBody(data map[string]interface{}, prefix string) map[string]string
 	return result
 }
 
-func MarshalJSONBody() {}
+func MarshalJSONBody(data map[string]string) []byte {
+	var list bool
+	if _, ok := data["DM-data-in-slice"]; ok {
+		delete(data, "DM-data-in-slice")
+		list = true
+	}
+	jsonData := make(map[string]interface{})
 
+	for key, value := range data {
+		// Split the key into parts
+		keys := strings.Split(key, ".")
+
+		// Traverse the keys to set the value in jsonData
+		temp := jsonData
+		for i := 0; i < len(keys)-1; i++ {
+			if _, ok := temp[keys[i]]; !ok {
+				temp[keys[i]] = make(map[string]interface{})
+			}
+			temp = temp[keys[i]].(map[string]interface{})
+		}
+		temp[keys[len(keys)-1]] = value
+	}
+
+	var d []byte
+	var err error
+	if list {
+		ljd := make([]map[string]interface{}, 1)
+		ljd[0] = jsonData
+
+		d, err = json.Marshal(ljd)
+		if err != nil {
+			// TODO: log it in verbose
+			return nil
+		}
+
+	} else {
+		d, err = json.Marshal(jsonData)
+		if err != nil {
+			// TODO: log it in verbose
+			return nil
+		}
+	}
+	return d
+}
+
+// TODO:
 // func UnmarshalXMLBody() {}
-
 // func MarshalXMLBody() {}
