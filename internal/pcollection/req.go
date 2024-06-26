@@ -19,6 +19,11 @@ func buildReq(r *Request) Req {
 	//remove get parameters
 	req.URL = strings.Split(req.URL, "?")[0]
 
+	// check schema
+	if !strings.HasPrefix(req.URL, "http") {
+		req.URL = fmt.Sprintf("http://%s", req.URL)
+	}
+
 	// parse params
 	get := make(map[string]string)
 	for _, v := range r.URL.Query {
