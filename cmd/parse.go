@@ -15,11 +15,11 @@ var parseCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		collF, err := cmd.Flags().GetString("collectionFile")
+		collF, err := cmd.Flags().GetString("collection")
 		if err != nil {
 			log.Fatalln(err)
 		}
-		envF, err := cmd.Flags().GetString("enviromentFile")
+		envF, err := cmd.Flags().GetString("enviroment")
 		if err != nil {
 			log.Fatalln(err)
 		}
