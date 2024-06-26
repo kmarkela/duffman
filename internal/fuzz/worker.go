@@ -18,9 +18,13 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, tr *http.Transport) {
 
 		if !wu.parBody {
 
-			wu.r.Parameters.Get[wu.param] = wu.word
+			getParam := make(map[string]string)
+			for k, v := range wu.r.Parameters.Get {
+				getParam[k] = v
+			}
+			getParam[wu.param] = wu.word
 
-			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
+			endpoint := createEndpoint(wu.r.URL, getParam)
 			var r io.Reader = strings.NewReader(wu.r.Body)
 			doRequest(endpoint, r, wu, tr)
 
@@ -59,7 +63,6 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -70,12 +73,18 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 
 func encodeBody(wu workUnit) (io.Reader, error) {
 
-	wu.r.Parameters.Post[wu.param] = wu.word
+	// to restore param back
+	postParam := make(map[string]string)
+	for k, v := range wu.r.Parameters.Post {
+		postParam[k] = v
+	}
+
+	postParam[wu.param] = wu.word
 
 	// encode Form
 	if strings.HasPrefix(wu.r.ContentType, "application/x-www-form-urlencoded") {
 		form := url.Values{}
-		for k, v := range wu.r.Parameters.Post {
+		for k, v := range postParam {
 			form.Add(k, v)
 		}
 		return strings.NewReader(form.Encode()), nil
@@ -83,7 +92,7 @@ func encodeBody(wu workUnit) (io.Reader, error) {
 
 	// encode json
 	if wu.r.ContentType == "application/json" {
-		b := pcollection.MarshalJSONBody(wu.r.Parameters.Post)
+		b := pcollection.MarshalJSONBody(postParam)
 		return bytes.NewBuffer(b), nil
 	}
 
