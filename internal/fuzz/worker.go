@@ -8,13 +8,21 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, tr *http.Transport) {
+func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, tr *http.Transport) {
 
 	for wu := range wq {
+
+		result := workResults{
+			endpoint: wu.r.URL,
+			param:    wu.param,
+			word:     wu.word,
+			method:   wu.r.Method,
+		}
 
 		if !wu.parBody {
 
@@ -26,14 +34,21 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, tr *http.Transport) {
 
 			endpoint := createEndpoint(wu.r.URL, getParam)
 			var r io.Reader = strings.NewReader(wu.r.Body)
-			doRequest(endpoint, r, wu, tr)
+			result.code, result.length, result.time, result.err = doRequest(endpoint, r, wu, tr)
+
+			wr <- result
 
 			continue
 		}
 
-		body, _ := encodeBody(wu)
 		endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
-		doRequest(endpoint, body, wu, tr)
+
+		body, err := encodeBody(wu)
+		result.code, result.length, result.time, result.err = doRequest(endpoint, body, wu, tr)
+		if err != nil {
+			result.err = fmt.Errorf("%s. %s", err, result.err)
+		}
+		wr <- result
 	}
 
 	wg.Done()
@@ -48,11 +63,11 @@ func createEndpoint(url string, par map[string]string) string {
 	return endpoint
 }
 
-func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport) error {
+func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport) (int, int64, time.Duration, error) {
 
 	req, err := http.NewRequest(wu.r.Method, endpoint, body)
 	if err != nil {
-		return err
+		return 0, 0, 0, err
 	}
 
 	for k, v := range wu.r.Headers {
@@ -61,14 +76,16 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 
 	client := &http.Client{Transport: tr}
 
+	start := time.Now()
+
 	res, err := client.Do(req)
 	if err != nil {
-		return err
+		return 0, 0, 0, err
 	}
-
 	defer res.Body.Close()
 
-	return nil
+	return res.StatusCode, res.ContentLength, time.Since(start), nil
+
 }
 
 func encodeBody(wu workUnit) (io.Reader, error) {
