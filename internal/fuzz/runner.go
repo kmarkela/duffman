@@ -47,7 +47,7 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 	// tem consumer
 	go func() {
 		for r := range wr {
-			fmt.Printf("%s\t%s\t%s\t%d\t%f\t%d", r.endpoint, r.param, r.word, r.code, r.time.Seconds(), r.length)
+			fmt.Printf("%s\t%s\t%s\t%s\t%d\t%s\t%d\n", r.method, r.endpoint, r.param, r.word, r.code, r.time, r.length)
 		}
 	}()
 
