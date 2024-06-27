@@ -32,7 +32,12 @@ var fuzzCmd = &cobra.Command{
 
 		greet()
 
-		coll, err := pcollection.New(collF, envF)
+		variables, err := cmd.Flags().GetStringSlice("variables")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		coll, err := pcollection.New(collF, envF, variables)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -76,6 +81,7 @@ func init() {
 	fuzzCmd.Flags().IntP("maxReq", "m", 0, "max amount of requests per second")
 	fuzzCmd.Flags().IntP("workers", "w", 10, "amount of workers")
 	fuzzCmd.Flags().StringSlice("headers", []string{}, "replace header if exists, add if it wasn't in original request")
+	fuzzCmd.Flags().StringSlice("variables", []string{}, "replace variables value")
 
 	rootCmd.AddCommand(fuzzCmd)
 }
