@@ -35,5 +35,6 @@ func Header(col *pcollection.Collection, wl int) {
 	fmt.Printf("%s%s#\n", line, strings.Repeat(" ", length-len(line)))
 
 	fmt.Printf("%s#\n", strings.Repeat("#", length))
+	fmt.Println()
 
 }
