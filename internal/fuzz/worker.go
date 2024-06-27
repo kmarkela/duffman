@@ -21,6 +21,7 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, 
 			endpoint: wu.r.URL,
 			param:    wu.param,
 			word:     wu.word,
+			method:   wu.r.Method,
 		}
 
 		if !wu.parBody {
@@ -33,15 +34,20 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, 
 
 			endpoint := createEndpoint(wu.r.URL, getParam)
 			var r io.Reader = strings.NewReader(wu.r.Body)
-			doRequest(endpoint, r, wu, tr)
+			result.code, result.length, result.time, result.err = doRequest(endpoint, r, wu, tr)
+
+			wr <- result
 
 			continue
 		}
 
-		body, _ := encodeBody(wu)
 		endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
-		doRequest(endpoint, body, wu, tr)
 
+		body, err := encodeBody(wu)
+		result.code, result.length, result.time, result.err = doRequest(endpoint, body, wu, tr)
+		if err != nil {
+			result.err = fmt.Errorf("%s. %s", err, result.err)
+		}
 		wr <- result
 	}
 
