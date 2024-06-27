@@ -15,6 +15,7 @@ type workUnit struct {
 	r           pcollection.Req
 	word, param string
 	parBody     bool
+	err         error
 }
 
 type workResults struct {
