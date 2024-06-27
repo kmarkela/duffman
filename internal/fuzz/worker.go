@@ -12,7 +12,7 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, tr *http.Transport) {
+func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, tr *http.Transport) {
 
 	for wu := range wq {
 
