@@ -18,10 +18,10 @@ type workUnit struct {
 }
 
 type workResults struct {
-	endpoint, param, word string
-	time                  time.Duration
-	code, length          int
-	err                   error
+	endpoint, param, word, method string
+	time                          time.Duration
+	code, length                  int
+	err                           error
 }
 
 func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
