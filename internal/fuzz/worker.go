@@ -10,18 +10,19 @@ import (
 	"sync"
 	"time"
 
+	"github.com/kmarkela/duffman/internal/output"
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, tr *http.Transport) {
+func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Results, tr *http.Transport) {
 
 	for wu := range wq {
 
-		result := workResults{
-			endpoint: wu.r.URL,
-			param:    wu.param,
-			word:     wu.word,
-			method:   wu.r.Method,
+		result := output.Results{
+			Endpoint: wu.r.URL,
+			Param:    wu.param,
+			Word:     wu.word,
+			Method:   wu.r.Method,
 		}
 
 		if !wu.parBody {
@@ -34,7 +35,7 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, 
 
 			endpoint := createEndpoint(wu.r.URL, getParam)
 			var r io.Reader = strings.NewReader(wu.r.Body)
-			result.code, result.length, result.time, result.err = doRequest(endpoint, r, wu, tr)
+			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, r, wu, tr)
 
 			wr <- result
 
@@ -44,9 +45,9 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, 
 		endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
 
 		body, err := encodeBody(wu)
-		result.code, result.length, result.time, result.err = doRequest(endpoint, body, wu, tr)
+		result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
 		if err != nil {
-			result.err = fmt.Errorf("%s. %s", err, result.err)
+			result.Err = fmt.Errorf("%s. %s", err, result.Err)
 		}
 		wr <- result
 	}
