@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/kmarkela/duffman/internal/output"
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
@@ -17,13 +18,13 @@ type workUnit struct {
 	parBody     bool
 }
 
-type workResults struct {
-	endpoint, param, word, method string
-	time                          time.Duration
-	code                          int
-	length                        int64
-	err                           error
-}
+// type WorkResults struct {
+// 	endpoint, param, word, method string
+// 	time                          time.Duration
+// 	code                          int
+// 	length                        int64
+// 	err                           error
+// }
 
 func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
@@ -42,12 +43,17 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
 	var wg sync.WaitGroup
 	var wq = make(chan workUnit)
-	var wr = make(chan workResults)
+	var wr = make(chan output.Results)
 
-	// tem consumer
+	output.Header(col, len(wordlist))
+
+	// consume the results
 	go func() {
+		var lt []output.Results
 		for r := range wr {
-			fmt.Printf("%s\t%s\t%s\t%s\t%d\t%s\t%d\n", r.method, r.endpoint, r.param, r.word, r.code, r.time, r.length)
+			lt = append(lt, r)
+			output.RenderTable(lt)
+			// fmt.Printf("%s\t%s\t%s\t%s\t%d\t%s\t%d\n", r.method, r.endpoint, r.param, r.word, r.code, r.time, r.length)
 		}
 	}()
 
