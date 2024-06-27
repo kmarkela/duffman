@@ -20,7 +20,8 @@ type workUnit struct {
 type workResults struct {
 	endpoint, param, word, method string
 	time                          time.Duration
-	code, length                  int
+	code                          int
+	length                        int64
 	err                           error
 }
 
