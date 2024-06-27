@@ -38,3 +38,17 @@ func Header(col *pcollection.Collection, wl int) {
 	fmt.Println()
 
 }
+
+// moveCursorUp moves the cursor up by n lines.
+func moveCursorUp(n int) {
+	fmt.Printf("\033[%dA", n)
+}
+
+// clearLine clears the entire line.
+func clearLine() {
+	fmt.Print("\033[2K")
+}
+
+func RenderTable(rl []Results) {
+
+}
