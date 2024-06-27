@@ -2,8 +2,10 @@ package output
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
@@ -50,5 +52,20 @@ func clearLine() {
 }
 
 func RenderTable(rl []Results) {
+
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"Enpoint", "Method", "Parameter", "FUZZ", "Code", "Length", "Time", "Error"})
+
+	for _, v := range rl {
+		t.AppendRows([]table.Row{{v.Endpoint, v.Method, v.Param, v.Word, v.Code, v.Length, v.Time, v.Err}})
+	}
+
+	if len(rl) > 1 {
+		moveCursorUp(len(rl) + 3)
+		clearLine()
+	}
+
+	t.Render()
 
 }
