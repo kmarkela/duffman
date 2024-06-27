@@ -15,13 +15,13 @@ type workUnit struct {
 	r           pcollection.Req
 	word, param string
 	parBody     bool
-	err         error
 }
 
 type workResults struct {
 	endpoint, param, word string
 	time                  time.Duration
 	code, length          int
+	err                   error
 }
 
 func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
