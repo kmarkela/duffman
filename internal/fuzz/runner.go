@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/kmarkela/duffman/internal/output"
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
@@ -43,6 +44,8 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 	var wg sync.WaitGroup
 	var wq = make(chan workUnit)
 	var wr = make(chan workResults)
+
+	output.Header(col, len(wordlist))
 
 	// tem consumer
 	go func() {
