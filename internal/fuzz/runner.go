@@ -17,6 +17,12 @@ type workUnit struct {
 	parBody     bool
 }
 
+type workResults struct {
+	endpoint, param, word string
+	time                  time.Duration
+	code, length          int
+}
+
 func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
 	// read wordlist
@@ -34,10 +40,19 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
 	var wg sync.WaitGroup
 	var wq = make(chan workUnit)
+	var wr = make(chan workResults)
+
+	// tem consumer
+	go func() {
+		for r := range wr {
+			fmt.Printf("%s\t%s\t%s\t%d\t%f\t%d", r.endpoint, r.param, r.word, r.code, r.time.Seconds(), r.length)
+		}
+	}()
+
 	// start workers
 	for i := 0; i < f.workers; i++ {
 		wg.Add(1)
-		go startWorker(&wg, wq, f.tr)
+		go startWorker(&wg, wq, wr, f.tr)
 	}
 
 	for _, v := range col.Requests {
