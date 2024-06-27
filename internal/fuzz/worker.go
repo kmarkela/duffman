@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
@@ -15,6 +16,12 @@ import (
 func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, tr *http.Transport) {
 
 	for wu := range wq {
+
+		result := workResults{
+			endpoint: wu.r.URL,
+			param:    wu.param,
+			word:     wu.word,
+		}
 
 		if !wu.parBody {
 
@@ -26,14 +33,16 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, 
 
 			endpoint := createEndpoint(wu.r.URL, getParam)
 			var r io.Reader = strings.NewReader(wu.r.Body)
-			doRequest(endpoint, r, wu, wr, tr)
+			doRequest(endpoint, r, wu, tr)
 
 			continue
 		}
 
 		body, _ := encodeBody(wu)
 		endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
-		doRequest(endpoint, body, wu, wr, tr)
+		doRequest(endpoint, body, wu, tr)
+
+		wr <- result
 	}
 
 	wg.Done()
@@ -48,18 +57,11 @@ func createEndpoint(url string, par map[string]string) string {
 	return endpoint
 }
 
-func doRequest(endpoint string, body io.Reader, wu workUnit, wr chan<- workResults, tr *http.Transport) {
-
-	result := workResults{
-		endpoint: wu.r.URL,
-		param:    wu.param,
-		word:     wu.word,
-	}
+func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport) (int, int64, time.Duration, error) {
 
 	req, err := http.NewRequest(wu.r.Method, endpoint, body)
 	if err != nil {
-		result.
-		return err
+		return 0, 0, 0, err
 	}
 
 	for k, v := range wu.r.Headers {
@@ -68,14 +70,16 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, wr chan<- workResul
 
 	client := &http.Client{Transport: tr}
 
+	start := time.Now()
+
 	res, err := client.Do(req)
 	if err != nil {
-		return err
+		return 0, 0, 0, err
 	}
-
 	defer res.Body.Close()
 
-	return nil
+	return res.StatusCode, res.ContentLength, time.Since(start), nil
+
 }
 
 func encodeBody(wu workUnit) (io.Reader, error) {
