@@ -26,14 +26,14 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- workResults, 
 
 			endpoint := createEndpoint(wu.r.URL, getParam)
 			var r io.Reader = strings.NewReader(wu.r.Body)
-			doRequest(endpoint, r, wu, tr)
+			doRequest(endpoint, r, wu, wr, tr)
 
 			continue
 		}
 
 		body, _ := encodeBody(wu)
 		endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
-		doRequest(endpoint, body, wu, tr)
+		doRequest(endpoint, body, wu, wr, tr)
 	}
 
 	wg.Done()
@@ -48,10 +48,17 @@ func createEndpoint(url string, par map[string]string) string {
 	return endpoint
 }
 
-func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport) error {
+func doRequest(endpoint string, body io.Reader, wu workUnit, wr chan<- workResults, tr *http.Transport) {
+
+	result := workResults{
+		endpoint: wu.r.URL,
+		param:    wu.param,
+		word:     wu.word,
+	}
 
 	req, err := http.NewRequest(wu.r.Method, endpoint, body)
 	if err != nil {
+		result.
 		return err
 	}
 
