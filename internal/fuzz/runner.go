@@ -19,14 +19,6 @@ type workUnit struct {
 	parBody     bool
 }
 
-// type WorkResults struct {
-// 	endpoint, param, word, method string
-// 	time                          time.Duration
-// 	code                          int
-// 	length                        int64
-// 	err                           error
-// }
-
 func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
 	// read wordlist
@@ -47,17 +39,26 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 	var wq = make(chan workUnit)
 	var wr = make(chan output.Results)
 
-	i := output.Header(col, len(wordlist), f.blacklist)
+	output.Header(col, len(wordlist), f.blacklist)
 
 	// consume the results
 	go func() {
 		var lt []output.Results
+		var le []output.Results
 		for r := range wr {
 			if slices.Contains(f.blacklist, r.Code) {
 				continue
 			}
+			if r.Err != nil {
+				le = append(le, r)
+				continue
+			}
 			lt = append(lt, r)
-			output.RenderTable(lt, i)
+			output.RenderTable(lt)
+		}
+
+		if len(le) > 0 {
+			output.RenderErrors(lt)
 		}
 		rg.Done()
 	}()
@@ -88,6 +89,7 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
 	close(wq)
 	wg.Wait()
+
 	close(wr)
 	rg.Wait()
 

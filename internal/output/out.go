@@ -9,7 +9,7 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-func Header(col *pcollection.Collection, wl int, blacklist []int) int {
+func Header(col *pcollection.Collection, wl int, blacklist []int) {
 
 	var length int = 55
 
@@ -43,7 +43,6 @@ func Header(col *pcollection.Collection, wl int, blacklist []int) int {
 
 	fmt.Printf("%s#\n", strings.Repeat("#", length))
 	fmt.Println()
-	return r * wl
 
 }
 
