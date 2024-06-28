@@ -2,6 +2,7 @@ package output
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
@@ -16,20 +17,30 @@ const (
 	Full
 )
 
+func printKV(tab int, s string, lv []pcollection.KeyValue) {
+	for _, v := range lv {
+		fmt.Printf("%s%s %s: %s\n", strings.Repeat(" ", tab), s, v.Key, v.Value)
+	}
+}
+
+func printMap(tab int, s string, lv map[string]string) {
+	for k, v := range lv {
+		fmt.Printf("%s%s %s: %s\n", strings.Repeat(" ", tab), s, k, v)
+	}
+}
+
 func PrintCol(t OutputType, c *pcollection.Collection) {
 
 	if c.Env != nil {
 		fmt.Printf("[*] Envoriment:\n")
-		for _, v := range c.Env {
-			fmt.Printf("  - %s: %s\n", v.Key, v.Value)
-		}
+		printKV(2, "-", c.Env)
+
 	}
 
 	if c.Variables != nil {
 		fmt.Printf("[*] Variables:\n")
-		for _, v := range c.Variables {
-			fmt.Printf("  - %s: %s\n", v.Key, v.Value)
-		}
+		printKV(2, "-", c.Variables)
+
 	}
 
 	fmt.Printf("[*] Req amount: %d\n", len(c.Requests))
@@ -66,23 +77,19 @@ func PrintCol(t OutputType, c *pcollection.Collection) {
 
 		if len(v.Headers) > 0 {
 			fmt.Printf("    * Headers:\n")
-			for key, value := range v.Headers {
-				fmt.Printf("      > %s: %s\n", key, value)
-			}
+			printMap(4, ">", v.Headers)
+
 		}
 
 		if len(v.Parameters.Get) > 0 {
 			fmt.Printf("    * Get Params:\n")
-			for key, value := range v.Parameters.Get {
-				fmt.Printf("      > %s: %s\n", key, value)
-			}
+			printMap(6, ">", v.Parameters.Get)
+
 		}
 
 		if len(v.Parameters.Post) > 0 {
 			fmt.Printf("    * Post Params:\n")
-			for key, value := range v.Parameters.Post {
-				fmt.Printf("      > %s: %s\n", key, value)
-			}
+			printMap(6, ">", v.Parameters.Post)
 		}
 	}
 
