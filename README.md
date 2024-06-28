@@ -6,6 +6,33 @@
 
 DuffMan is a tool written in Go that allows users to parse Postman collections and perform fuzz testing on all the endpoints defined within. This tool is designed to help developers and security analysts discover potential vulnerabilities and ensure robust error handling in their APIs.
 
+## Install 
+
+There are three ways to install the DuffMan: building from source, using `go get`, or downloading pre-compiled binaries.
+
+### Building from Source
+
+```sh
+git clone https://github.com/kmarkela/duffman
+cd duffman
+go build -o duffman
+```
+
+### Using `go get`
+
+```sh
+go get github.com/kmarkela/duffman
+```
+
+### Binaries 
+
+If you prefer to download a pre-compiled binary for your platform, follow these steps:
+
+1. Navigate to the [Releases page](https://github.com/kmarkela/duffman/releases) of the DuffMan repository.
+2. Download the appropriate binary for your operating system and architecture.
+3. Unzip the downloaded file and move the binary to your desired location.
+
+
 ## Usage
 
 ```sh
@@ -224,3 +251,9 @@ The Postman Collection Fuzzer is intended for security research and testing purp
 The author(s) of this tool take no responsibility for any misuse of the software. It is the end user's responsibility to comply with all applicable local, state, federal, and international laws. By using this tool, you agree that you hold responsibility for any consequences that arise from its use.
 
 ### Contributing
+
+
+### Authors
+
+- Kanstantsin Markelau 
+- Sam Cosentino 
