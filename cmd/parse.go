@@ -26,7 +26,7 @@ var parseCmd = &cobra.Command{
 
 		greet()
 
-		coll, err := pcollection.New(collF, envF)
+		coll, err := pcollection.New(collF, envF, nil)
 		if err != nil {
 			log.Fatalln(err)
 		}

@@ -9,12 +9,12 @@ import (
 
 type Fuzzer struct {
 	workers, maxReq int
-	verbose         bool
+	blacklist       []int
 	headers         map[string]string
 	tr              *http.Transport
 }
 
-func New(workers, maxReq int, headers []string, proxy string, verbose bool) (Fuzzer, error) {
+func New(workers, maxReq int, headers []string, proxy string, blacklist []int) (Fuzzer, error) {
 
 	var fuzzer = Fuzzer{}
 
@@ -30,11 +30,11 @@ func New(workers, maxReq int, headers []string, proxy string, verbose bool) (Fuz
 		return fuzzer, err
 	}
 	return Fuzzer{
-		headers: h,
-		workers: workers,
-		maxReq:  maxReq,
-		verbose: verbose,
-		tr:      &http.Transport{Proxy: http.ProxyURL(proxyUrl)},
+		headers:   h,
+		workers:   workers,
+		maxReq:    maxReq,
+		blacklist: blacklist,
+		tr:        &http.Transport{Proxy: http.ProxyURL(proxyUrl)},
 	}, nil
 }
 

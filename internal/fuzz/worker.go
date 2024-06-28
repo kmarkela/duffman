@@ -47,7 +47,7 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 		body, err := encodeBody(wu)
 		result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
 		if err != nil {
-			result.Err = fmt.Errorf("%s. %s", err, result.Err)
+			result.Err = err
 		}
 		wr <- result
 	}
@@ -85,7 +85,7 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 	}
 	defer res.Body.Close()
 
-	return res.StatusCode, res.ContentLength, time.Since(start), nil
+	return res.StatusCode, res.ContentLength, time.Duration(time.Since(start).Truncate(time.Millisecond)), nil
 
 }
 
