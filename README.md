@@ -53,6 +53,10 @@ Global Flags:
 ```sh
 duffman parse -e test/testing_environment.json -f test/testing_collection.json
 
+```
+
+```sh
+
  ####                                       ###
  ######                                   #######
  ########                       ######   #########
@@ -127,6 +131,9 @@ Global Flags:
 
 ```sh
 go run main.go fuzz -f test/testing_collection.json -e test/testing_environment.json --headers "User-Agent: duffman" --headers "X-Fuzz: test" -m 40 -w 100 -p http://127.0.0.1:8080 -l ~/1.lst -b 404,401
+```
+
+```sh
 
  ####                                       ###
  ######                                   #######
