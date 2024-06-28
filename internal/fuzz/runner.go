@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -17,14 +18,6 @@ type workUnit struct {
 	word, param string
 	parBody     bool
 }
-
-// type WorkResults struct {
-// 	endpoint, param, word, method string
-// 	time                          time.Duration
-// 	code                          int
-// 	length                        int64
-// 	err                           error
-// }
 
 func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
@@ -42,20 +35,35 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 	}
 
 	var wg sync.WaitGroup
+	var rg sync.WaitGroup
 	var wq = make(chan workUnit)
 	var wr = make(chan output.Results)
 
-	output.Header(col, len(wordlist))
+	output.Header(col, len(wordlist), f.blacklist)
 
 	// consume the results
 	go func() {
 		var lt []output.Results
+		var le []output.Results
 		for r := range wr {
+			if r.Err != nil {
+				le = append(le, r)
+				continue
+			}
+			if slices.Contains(f.blacklist, r.Code) {
+				continue
+			}
+
 			lt = append(lt, r)
 			output.RenderTable(lt)
-			// fmt.Printf("%s\t%s\t%s\t%s\t%d\t%s\t%d\n", r.method, r.endpoint, r.param, r.word, r.code, r.time, r.length)
 		}
+
+		if len(le) > 0 {
+			output.RenderErrors(le)
+		}
+		rg.Done()
 	}()
+	rg.Add(1)
 
 	// start workers
 	for i := 0; i < f.workers; i++ {
@@ -82,6 +90,10 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
 	close(wq)
 	wg.Wait()
+
+	close(wr)
+	rg.Wait()
+
 }
 
 func distrWU(key string, wordlist []string, r pcollection.Req, rl <-chan time.Time, wq chan workUnit, parBody bool) {

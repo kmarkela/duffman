@@ -9,7 +9,7 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-func Header(col *pcollection.Collection, wl int) {
+func Header(col *pcollection.Collection, wl int, blacklist []int) {
 
 	var length int = 55
 
@@ -36,6 +36,11 @@ func Header(col *pcollection.Collection, wl int) {
 	line = fmt.Sprintf("# [*] Total to fuzz: %d", r*wl)
 	fmt.Printf("%s%s#\n", line, strings.Repeat(" ", length-len(line)))
 
+	if len(blacklist) > 0 {
+		line = fmt.Sprintf("# [*] Status Code Blacklist: %s", strings.Trim(strings.Replace(fmt.Sprint(blacklist), " ", ",", -1), "[]"))
+		fmt.Printf("%s%s#\n", line, strings.Repeat(" ", length-len(line)))
+	}
+
 	fmt.Printf("%s#\n", strings.Repeat("#", length))
 	fmt.Println()
 
@@ -54,11 +59,12 @@ func clearLine() {
 func RenderTable(rl []Results) {
 
 	t := table.NewWriter()
+
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Enpoint", "Method", "Parameter", "FUZZ", "Code", "Length", "Time", "Error"})
+	t.AppendHeader(table.Row{"Enpoint", "Method", "Parameter", "FUZZ", "Code", "Length", "Time"})
 
 	for _, v := range rl {
-		t.AppendRows([]table.Row{{v.Endpoint, v.Method, v.Param, v.Word, v.Code, v.Length, v.Time, v.Err}})
+		t.AppendRows([]table.Row{{v.Endpoint, v.Method, v.Param, v.Word, v.Code, v.Length, v.Time}})
 	}
 
 	if len(rl) > 1 {
@@ -67,5 +73,22 @@ func RenderTable(rl []Results) {
 	}
 
 	t.Render()
+
+}
+
+func RenderErrors(rl []Results) {
+
+	fmt.Println()
+	if len(rl) == 1 {
+		fmt.Printf("[-] %d Error occurs during Fuzz:\n", 1)
+	} else {
+		fmt.Printf("[-] %d Errors occur during Fuzz:\n", len(rl))
+	}
+
+	for _, v := range rl {
+		fmt.Printf("  - Endpoint %s: \n", v.Endpoint)
+		fmt.Printf("    * Param: %s\n", v.Param)
+		fmt.Printf("    * Error: %s\n", v.Err)
+	}
 
 }

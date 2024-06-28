@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
-func New(colF, envF string) (Collection, error) {
+func New(colF, envF string, vars []string) (Collection, error) {
 
 	var collection = Collection{}
 
@@ -24,6 +25,20 @@ func New(colF, envF string) (Collection, error) {
 	}
 
 	collection.Variables = rawCollection.Variable
+	vl, err := pVars(vars)
+	if err != nil {
+		return collection, fmt.Errorf("cannot parse provided variables %v. Err: %s", vars, err)
+	}
+
+	for k, v := range vl {
+		for _, j := range collection.Variables {
+			if strings.EqualFold(j.Key, k) {
+				continue
+			}
+			j.Value = v
+		}
+
+	}
 
 	reqLt, err := getReqLt(&rawCollection)
 	if err != nil {
@@ -67,6 +82,20 @@ func getReqLt(rc *RawCollection) ([]Req, error) {
 
 	return rlt, nil
 
+}
+
+func pVars(vars []string) (map[string]string, error) {
+	rh := make(map[string]string)
+
+	for _, h := range vars {
+		p := strings.Split(h, ":")
+		if len(p) < 2 {
+			return nil, fmt.Errorf("%s is wrong header format", h)
+		}
+		rh[strings.TrimSpace(p[0])] = p[1]
+	}
+
+	return rh, nil
 }
 
 func (c *Collection) ResolveVars() {}
