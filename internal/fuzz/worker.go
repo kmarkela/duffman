@@ -47,7 +47,7 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 		body, err := encodeBody(wu)
 		result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
 		if err != nil {
-			result.Err = fmt.Errorf("%s. %s", err, result.Err)
+			result.Err = err
 		}
 		wr <- result
 	}
