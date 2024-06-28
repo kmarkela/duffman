@@ -43,23 +43,25 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 	}
 
 	var wg sync.WaitGroup
+	var rg sync.WaitGroup
 	var wq = make(chan workUnit)
 	var wr = make(chan output.Results)
 
-	output.Header(col, len(wordlist))
+	i := output.Header(col, len(wordlist), f.blacklist)
 
 	// consume the results
 	go func() {
 		var lt []output.Results
 		for r := range wr {
 			if slices.Contains(f.blacklist, r.Code) {
-
 				continue
 			}
 			lt = append(lt, r)
-			output.RenderTable(lt)
+			output.RenderTable(lt, i)
 		}
+		rg.Done()
 	}()
+	rg.Add(1)
 
 	// start workers
 	for i := 0; i < f.workers; i++ {
@@ -86,6 +88,9 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
 	close(wq)
 	wg.Wait()
+	close(wr)
+	rg.Wait()
+
 }
 
 func distrWU(key string, wordlist []string, r pcollection.Req, rl <-chan time.Time, wq chan workUnit, parBody bool) {

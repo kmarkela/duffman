@@ -9,7 +9,7 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-func Header(col *pcollection.Collection, wl int) {
+func Header(col *pcollection.Collection, wl int, blacklist []int) int {
 
 	var length int = 55
 
@@ -36,8 +36,14 @@ func Header(col *pcollection.Collection, wl int) {
 	line = fmt.Sprintf("# [*] Total to fuzz: %d", r*wl)
 	fmt.Printf("%s%s#\n", line, strings.Repeat(" ", length-len(line)))
 
+	if len(blacklist) > 0 {
+		line = fmt.Sprintf("# [*] Status Code Blacklist: %s", strings.Trim(strings.Replace(fmt.Sprint(blacklist), " ", ",", -1), "[]"))
+		fmt.Printf("%s%s#\n", line, strings.Repeat(" ", length-len(line)))
+	}
+
 	fmt.Printf("%s#\n", strings.Repeat("#", length))
 	fmt.Println()
+	return r * wl
 
 }
 
@@ -51,9 +57,10 @@ func clearLine() {
 	fmt.Print("\033[2K")
 }
 
-func RenderTable(rl []Results) {
+func RenderTable(rl []Results, i int) {
 
 	t := table.NewWriter()
+
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Enpoint", "Method", "Parameter", "FUZZ", "Code", "Length", "Time"})
 
