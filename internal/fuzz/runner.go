@@ -46,19 +46,20 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 		var lt []output.Results
 		var le []output.Results
 		for r := range wr {
-			if slices.Contains(f.blacklist, r.Code) {
-				continue
-			}
 			if r.Err != nil {
 				le = append(le, r)
 				continue
 			}
+			if slices.Contains(f.blacklist, r.Code) {
+				continue
+			}
+
 			lt = append(lt, r)
 			output.RenderTable(lt)
 		}
 
 		if len(le) > 0 {
-			output.RenderErrors(lt)
+			output.RenderErrors(le)
 		}
 		rg.Done()
 	}()

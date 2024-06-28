@@ -56,7 +56,7 @@ func clearLine() {
 	fmt.Print("\033[2K")
 }
 
-func RenderTable(rl []Results, i int) {
+func RenderTable(rl []Results) {
 
 	t := table.NewWriter()
 
@@ -73,5 +73,22 @@ func RenderTable(rl []Results, i int) {
 	}
 
 	t.Render()
+
+}
+
+func RenderErrors(rl []Results) {
+
+	fmt.Println()
+	if len(rl) == 1 {
+		fmt.Printf("[-] %d Error occurs during Fuzz:\n", 1)
+	} else {
+		fmt.Printf("[-] %d Errors occur during Fuzz:\n", len(rl))
+	}
+
+	for _, v := range rl {
+		fmt.Printf("  - Endpoint %s: \n", v.Endpoint)
+		fmt.Printf("    * Param: %s\n", v.Param)
+		fmt.Printf("    * Error: %s\n", v.Err)
+	}
 
 }
