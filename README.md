@@ -252,6 +252,7 @@ The author(s) of this tool take no responsibility for any misuse of the software
 
 ### Contributing
 
+We welcome contributions! Please read our CONTRIBUTING.md for details on how to submit pull requests, the process for submitting bugs, feature requests, and how to propose changes.
 
 ### Authors
 
