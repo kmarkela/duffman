@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -51,9 +52,12 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 	go func() {
 		var lt []output.Results
 		for r := range wr {
+			if slices.Contains(f.blacklist, r.Code) {
+
+				continue
+			}
 			lt = append(lt, r)
 			output.RenderTable(lt)
-			// fmt.Printf("%s\t%s\t%s\t%s\t%d\t%s\t%d\n", r.method, r.endpoint, r.param, r.word, r.code, r.time, r.length)
 		}
 	}()
 

@@ -55,10 +55,10 @@ func RenderTable(rl []Results) {
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Enpoint", "Method", "Parameter", "FUZZ", "Code", "Length", "Time", "Error"})
+	t.AppendHeader(table.Row{"Enpoint", "Method", "Parameter", "FUZZ", "Code", "Length", "Time"})
 
 	for _, v := range rl {
-		t.AppendRows([]table.Row{{v.Endpoint, v.Method, v.Param, v.Word, v.Code, v.Length, v.Time, v.Err}})
+		t.AppendRows([]table.Row{{v.Endpoint, v.Method, v.Param, v.Word, v.Code, v.Length, v.Time}})
 	}
 
 	if len(rl) > 1 {
