@@ -21,7 +21,7 @@ func init() {
 	// rootCmd.PersistentFlags().BoolP("verbose", "V", false, "Verbose")
 	rootCmd.PersistentFlags().StringP("collection", "f", "", "path to collection file")
 	rootCmd.MarkFlagRequired("collection")
-	rootCmd.PersistentFlags().StringP("enviroment", "e", "", "path to enviroment file")
+	rootCmd.PersistentFlags().StringP("environment", "e", "", "path to environment file")
 	rootCmd.Root().CompletionOptions.DisableDefaultCmd = true
 }
 

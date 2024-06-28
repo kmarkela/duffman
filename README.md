@@ -1,5 +1,7 @@
 # DuffMan: Diagnostic Utility for Fuzzing and Fault Management of API Nodes
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/kmarkela/duffman)](https://goreportcard.com/report/github.com/kmarkela/duffman)
+
 <p align="center">
   <img src="./assets/duffman.png" alt="DuffMan"/>
 </p>
