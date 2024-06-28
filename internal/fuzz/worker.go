@@ -85,7 +85,7 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 	}
 	defer res.Body.Close()
 
-	return res.StatusCode, res.ContentLength, time.Since(start), nil
+	return res.StatusCode, res.ContentLength, time.Duration(time.Since(start).Truncate(time.Millisecond)), nil
 
 }
 
