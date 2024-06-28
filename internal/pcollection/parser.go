@@ -53,12 +53,12 @@ func New(colF, envF string, vars []string) (Collection, error) {
 
 	jsonE, err := os.Open(envF)
 	if err != nil {
-		return collection, fmt.Errorf("cannot open Enviroment file. Err: %s", err)
+		return collection, fmt.Errorf("cannot open Environment file. Err: %s", err)
 	}
 	defer jsonE.Close()
 
 	byteE, _ := io.ReadAll(jsonE)
-	var env Enviroment
+	var env Environment
 	if err := json.Unmarshal(byteE, &env); err != nil {
 		return collection, fmt.Errorf("cannot unmarshal env. Err: %s", err)
 	}
