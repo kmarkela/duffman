@@ -67,7 +67,7 @@ func parseBody(b Body) (map[string]string, string, string) {
 		for _, v := range b.FormData {
 			params[v.Key] = v.Value
 		}
-		return params, "multipart/form-data; boundary=------border", ""
+		return params, "multipart/form-data", ""
 	}
 
 	if b.URLEncoded != nil {

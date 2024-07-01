@@ -43,6 +43,35 @@
 										}
 									},
 									"response": []
+								},
+								{
+									"name": "ttt Copy",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "[{\"test1\":[{\n    \"test2\": \"1\",\n    \"test3\": [1,2]\n}\n], \"test2\": {\n    \"test3\": {\n        \"test4\": 8\n    }\n}},\n{\"tr\":1}]",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "foo.bar/3-sub/post/raw-json-list",
+											"host": [
+												"foo",
+												"bar"
+											],
+											"path": [
+												"3-sub",
+												"post",
+												"raw-json-list"
+											]
+										}
+									},
+									"response": []
 								}
 							]
 						},
@@ -122,6 +151,16 @@
 											"key": "post",
 											"value": "123456",
 											"type": "text"
+										},
+										{
+											"key": "post1",
+											"value": "45678",
+											"type": "text"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "TTqywezod/Screenshot 2024-07-01 at 09.51.10.png"
 										}
 									]
 								},
