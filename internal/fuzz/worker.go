@@ -76,7 +76,9 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 		req.Header.Set(k, v)
 	}
 
-	req.Header.Set("Content-Type", wu.r.ContentType)
+	if wu.r.ContentType != "" {
+		req.Header.Set("Content-Type", wu.r.ContentType)
+	}
 
 	client := &http.Client{Transport: tr}
 
@@ -131,8 +133,6 @@ func encodeBody(wu *workUnit) (io.Reader, error) {
 		b := pcollection.MarshalJSONBody(postParam)
 		return bytes.NewBuffer(b), nil
 	}
-
-	// TODO: encode multipart
 
 	// unknown content type
 	return strings.NewReader(wu.r.Body), fmt.Errorf("no encoder for: %s", wu.r.ContentType)

@@ -18,7 +18,16 @@ type workUnit struct {
 	r           pcollection.Req
 	word, param string
 	parBody     bool
+	fuzzT       fuzzType
 }
+
+type fuzzType int
+
+const (
+	post fuzzType = iota + 1
+	get
+	path
+)
 
 func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
