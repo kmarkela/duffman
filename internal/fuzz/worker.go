@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strings"
@@ -44,7 +45,7 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 
 		endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
 
-		body, err := encodeBody(wu)
+		body, err := encodeBody(&wu)
 		result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
 		if err != nil {
 			result.Err = err
@@ -75,6 +76,8 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 		req.Header.Set(k, v)
 	}
 
+	req.Header.Set("Content-Type", wu.r.ContentType)
+
 	client := &http.Client{Transport: tr}
 
 	start := time.Now()
@@ -89,7 +92,7 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 
 }
 
-func encodeBody(wu workUnit) (io.Reader, error) {
+func encodeBody(wu *workUnit) (io.Reader, error) {
 
 	// to restore param back
 	postParam := make(map[string]string)
@@ -106,6 +109,21 @@ func encodeBody(wu workUnit) (io.Reader, error) {
 			form.Add(k, v)
 		}
 		return strings.NewReader(form.Encode()), nil
+	}
+
+	if strings.HasPrefix(wu.r.ContentType, "multipart/form-data") {
+		var buf bytes.Buffer
+		writer := multipart.NewWriter(&buf)
+		for k, v := range postParam {
+			writer.WriteField(k, v)
+			// TODO: error handler
+			// err := writer.WriteField(k, v)
+			// if err != nil {
+			// 	return &buf, err
+			// }
+		}
+		wu.r.ContentType = writer.FormDataContentType()
+		return &buf, nil
 	}
 
 	// encode json
