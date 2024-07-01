@@ -1,6 +1,7 @@
 package fuzz
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -115,16 +116,39 @@ func distrWU(key string, wordlist []string, r pcollection.Req, rl <-chan time.Ti
 
 func pwlist(filename string) ([]string, error) {
 
-	content, err := os.ReadFile(filename)
+	// content, err := os.ReadFile(filename)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// // TODO: remove EOF
+	// lines := strings.Split(string(content), "\n")
+	// if len(lines) == 0 {
+	// 	return nil, fmt.Errorf("%s is empty", filename)
+	// }
+	// return lines, nil
+
+	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
 
-	// TODO: remove EOF
-	lines := strings.Split(string(content), "\n")
-	if len(lines) == 0 {
-		return nil, fmt.Errorf("%s is empty", filename)
+	var lines []string
+
+	// Create a new scanner for the file
+	scanner := bufio.NewScanner(file)
+
+	// Read the file line by line
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
 	}
+
+	// Check for errors during the scan
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
 	return lines, nil
 
 }
