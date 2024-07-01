@@ -51,16 +51,16 @@ Available Commands:
   version     Print Version
 
 Flags:
-  -f, --collection string   path to collection file
-  -e, --enviroment string   path to enviroment file
-  -h, --help                help for DuffMan
+  -f, --collection  string   path to collection file
+  -e, --environment string   path to environment file
+  -h, --help                 help for DuffMan
 
 Use "DuffMan [command] --help" for more information about a command.
 ```
 
 ### Parse
 
-Parses Postman Collection and Enviroment files and print Requests/Variables/etc defined within.
+Parses Postman Collection and Environment files and print Requests/Variables/etc defined within.
 
 ```sh
 parse only collection file
@@ -73,8 +73,8 @@ Flags:
       --output string   output type. Possible values: brief, req, full (default "req")
 
 Global Flags:
-  -f, --collection string   path to collection file
-  -e, --enviroment string   path to enviroment file
+  -f, --collection  string   path to collection file
+  -e, --environment string   path to environment file
 ```
 
 #### Example
@@ -114,7 +114,7 @@ duffman parse -e test/testing_environment.json -f test/testing_collection.json
  #######                   #######
  #####                      ####
 
-[*] Envoriment:
+[*] Environment:
   - env1: 9999
   - env2: 8888
   - env3: 7777
@@ -153,7 +153,7 @@ Flags:
 
 Global Flags:
   -f, --collection string   path to collection file
-  -e, --enviroment string   path to enviroment file
+  -e, --environment string   path to environment file
 ```
 
 #### Example
@@ -248,13 +248,13 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ### Disclamer 
 
-The Postman Collection Fuzzer is intended for security research and testing purposes only. This tool should only be used on systems that you own or are explicitly authorized to test. Ethical conduct is required from all users.
+The DuffMan is intended for security research and testing purposes only. This tool should only be used on systems that you own or are explicitly authorized to test. Ethical conduct is required from all users.
 
 The author(s) of this tool take no responsibility for any misuse of the software. It is the end user's responsibility to comply with all applicable local, state, federal, and international laws. By using this tool, you agree that you hold responsibility for any consequences that arise from its use.
 
 ### Contributing
 
-We welcome contributions! Please read our CONTRIBUTING.md for details on how to submit pull requests, the process for submitting bugs, feature requests, and how to propose changes.
+We welcome contributions! Please read our [CONTRIBUTING](./CONTRIBUTING.md) for details on how to submit pull requests, the process for submitting bugs, feature requests, and how to propose changes.
 
 ### Authors
 
