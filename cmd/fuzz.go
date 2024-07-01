@@ -20,7 +20,7 @@ var fuzzCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalln(err)
 		}
-		envF, err := cmd.Flags().GetString("enviroment")
+		envF, err := cmd.Flags().GetString("environment")
 		if err != nil {
 			log.Fatalln(err)
 		}
