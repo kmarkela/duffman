@@ -14,7 +14,7 @@ func buildReq(r *Request) Req {
 	}
 
 	// url
-	req.URL = resolveURLVar(r.URL)
+	// req.URL = resolveURLVar(r.URL)
 
 	//remove get parameters
 	req.URL = strings.Split(req.URL, "?")[0]
@@ -37,6 +37,7 @@ func buildReq(r *Request) Req {
 
 	req.Parameters.Get = get
 	req.Parameters.Post = post
+	req.Parameters.Path = parseVariables(r.URL.Variables)
 
 	req.ContentType = ct
 	req.Body = body
@@ -44,6 +45,16 @@ func buildReq(r *Request) Req {
 
 	return req
 
+}
+
+func parseVariables(vars []KeyValue) map[string]string {
+
+	rv := make(map[string]string)
+	for _, v := range vars {
+		rv[v.Key] = v.Value
+	}
+
+	return rv
 }
 
 func resolveURLVar(url URL) string {
