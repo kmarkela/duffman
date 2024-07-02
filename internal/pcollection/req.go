@@ -13,11 +13,8 @@ func buildReq(r *Request) Req {
 		req.Headers[strings.ToLower(v.Key)] = v.Value
 	}
 
-	// url
-	req.URL = resolveURLVar(r.URL)
-
 	//remove get parameters
-	req.URL = strings.Split(req.URL, "?")[0]
+	req.URL = strings.Split(r.URL.Raw, "?")[0]
 
 	// check schema
 	if !strings.HasPrefix(req.URL, "http") {
@@ -37,6 +34,7 @@ func buildReq(r *Request) Req {
 
 	req.Parameters.Get = get
 	req.Parameters.Post = post
+	req.Parameters.Path = parseVariables(r.URL.Variables)
 
 	req.ContentType = ct
 	req.Body = body
@@ -46,18 +44,14 @@ func buildReq(r *Request) Req {
 
 }
 
-func resolveURLVar(url URL) string {
-	if url.Variables == nil {
-		return url.Raw
+func parseVariables(vars []KeyValue) map[string]string {
+
+	rv := make(map[string]string)
+	for _, v := range vars {
+		rv[v.Key] = v.Value
 	}
 
-	u := url.Raw
-	for _, v := range url.Variables {
-		key := fmt.Sprintf(":%s", v.Key)
-		u = strings.ReplaceAll(u, key, v.Value)
-	}
-
-	return u
+	return rv
 }
 
 func parseBody(b Body) (map[string]string, string, string) {
