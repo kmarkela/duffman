@@ -144,6 +144,7 @@ Usage:
 Flags:
       --headers strings               replace header if exists, add if it wasn't in original request
   -h, --help                          help for fuzz
+  -r, --hide-response-time int        hide requests with response time less than X in milliseconds
   -m, --maxReq int                    max amount of requests per second
   -p, --proxy string                  proxy
   -b, --status-codes-blacklist ints   hide responses with specified status codes
@@ -152,7 +153,7 @@ Flags:
   -w, --workers int                   amount of workers (default 10)
 
 Global Flags:
-  -f, --collection string   path to collection file
+  -f, --collection string    path to collection file
   -e, --environment string   path to environment file
 ```
 

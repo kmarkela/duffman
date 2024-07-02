@@ -42,7 +42,7 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 	var wq = make(chan workUnit)
 	var wr = make(chan output.Results)
 
-	output.Header(col, len(wordlist), f.blacklist)
+	output.Header(col, len(wordlist), f.responseT, f.blacklist)
 
 	// consume the results
 	go func() {
@@ -54,6 +54,10 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 				continue
 			}
 			if slices.Contains(f.blacklist, r.Code) {
+				continue
+			}
+
+			if f.responseT > 0 && time.Duration(f.responseT)*time.Millisecond > r.Time {
 				continue
 			}
 
