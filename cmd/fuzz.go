@@ -42,6 +42,11 @@ var fuzzCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
+		responseT, err := cmd.Flags().GetInt("hide-response-time")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
 		coll, err := pcollection.New(collF, envF, variables)
 		if err != nil {
 			log.Fatalln(err)
@@ -68,7 +73,7 @@ var fuzzCmd = &cobra.Command{
 		// 	log.Fatalln(err)
 		// }
 
-		f, err := fuzz.New(workers, maxReq, headers, proxy, blacklist)
+		f, err := fuzz.New(workers, maxReq, responseT, headers, proxy, blacklist)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -85,6 +90,7 @@ func init() {
 	fuzzCmd.Flags().StringP("proxy", "p", "", "proxy")
 	fuzzCmd.Flags().IntP("maxReq", "m", 0, "max amount of requests per second")
 	fuzzCmd.Flags().IntP("workers", "w", 10, "amount of workers")
+	fuzzCmd.Flags().IntP("hide-response-time", "r", 0, "hide requests with response time less than X in milliseconds")
 	fuzzCmd.Flags().StringSlice("headers", []string{}, "replace header if exists, add if it wasn't in original request")
 	fuzzCmd.Flags().StringSlice("variables", []string{}, "replace variables value")
 	fuzzCmd.Flags().IntSliceP("status-codes-blacklist", "b", []int{}, "hide responses with specified status codes")

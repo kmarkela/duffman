@@ -9,7 +9,7 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-func Header(col *pcollection.Collection, wl int, blacklist []int) {
+func Header(col *pcollection.Collection, wl, rt int, blacklist []int) {
 
 	var length int = 55
 
@@ -38,6 +38,11 @@ func Header(col *pcollection.Collection, wl int, blacklist []int) {
 
 	if len(blacklist) > 0 {
 		line = fmt.Sprintf("# [*] Status Code Blacklist: %s", strings.Trim(strings.Replace(fmt.Sprint(blacklist), " ", ",", -1), "[]"))
+		fmt.Printf("%s%s#\n", line, strings.Repeat(" ", length-len(line)))
+	}
+
+	if rt > 0 {
+		line = fmt.Sprintf("# [*] Hide Response Time less than (ms): %d", rt)
 		fmt.Printf("%s%s#\n", line, strings.Repeat(" ", length-len(line)))
 	}
 
