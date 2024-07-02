@@ -92,7 +92,7 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 		}
 
 		for key := range v.Parameters.Post {
-			distrWU(key, wordlist, v, rateLimiter, wq, PATH)
+			distrWU(key, wordlist, v, rateLimiter, wq, POST)
 		}
 	}
 
