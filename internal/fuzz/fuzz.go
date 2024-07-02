@@ -8,13 +8,13 @@ import (
 )
 
 type Fuzzer struct {
-	workers, maxReq int
-	blacklist       []int
-	headers         map[string]string
-	tr              *http.Transport
+	workers, maxReq, responseT int
+	blacklist                  []int
+	headers                    map[string]string
+	tr                         *http.Transport
 }
 
-func New(workers, maxReq int, headers []string, proxy string, blacklist []int) (Fuzzer, error) {
+func New(workers, maxReq, responseT int, headers []string, proxy string, blacklist []int) (Fuzzer, error) {
 
 	var fuzzer = Fuzzer{}
 
@@ -32,6 +32,7 @@ func New(workers, maxReq int, headers []string, proxy string, blacklist []int) (
 	return Fuzzer{
 		headers:   h,
 		workers:   workers,
+		responseT: responseT,
 		maxReq:    maxReq,
 		blacklist: blacklist,
 		tr:        &http.Transport{Proxy: http.ProxyURL(proxyUrl)},
