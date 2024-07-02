@@ -27,7 +27,7 @@ func Header(col *pcollection.Collection, wl int, blacklist []int) {
 
 	var r int
 	for _, v := range col.Requests {
-		r += len(v.Parameters.Get) + len(v.Parameters.Post)
+		r += len(v.Parameters.Get) + len(v.Parameters.Post) + len(v.Parameters.Path)
 	}
 
 	line = fmt.Sprintf("# [*] Amount of parameters: %d", r)

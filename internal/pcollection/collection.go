@@ -19,4 +19,5 @@ type Req struct {
 type Parameters struct {
 	Get  map[string]string
 	Post map[string]string
+	Path map[string]string
 }

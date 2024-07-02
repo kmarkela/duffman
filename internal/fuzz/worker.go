@@ -15,18 +15,37 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
+type workUnit struct {
+	r           pcollection.Req
+	word, param string
+	fuzzT       fuzzType
+}
+
 func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Results, tr *http.Transport) {
 
 	for wu := range wq {
 
 		result := output.Results{
-			Endpoint: wu.r.URL,
-			Param:    wu.param,
-			Word:     wu.word,
-			Method:   wu.r.Method,
+			Param:  wu.param,
+			Word:   wu.word,
+			Method: wu.r.Method,
 		}
 
-		if !wu.parBody {
+		switch wu.fuzzT {
+		case PATH:
+
+			pathParam := make(map[string]string)
+			for k, v := range wu.r.Parameters.Path {
+				pathParam[k] = v
+			}
+
+			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get, pathParam)
+			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, strings.NewReader(wu.r.Body), wu, tr)
+			result.Endpoint = strings.Split(endpoint, "?")[0]
+
+			wr <- result
+
+		case GET:
 
 			getParam := make(map[string]string)
 			for k, v := range wu.r.Parameters.Get {
@@ -34,31 +53,41 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 			}
 			getParam[wu.param] = wu.word
 
-			endpoint := createEndpoint(wu.r.URL, getParam)
-			var r io.Reader = strings.NewReader(wu.r.Body)
-			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, r, wu, tr)
+			endpoint := createEndpoint(wu.r.URL, getParam, wu.r.Parameters.Path)
+			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, strings.NewReader(wu.r.Body), wu, tr)
+			result.Endpoint = strings.Split(endpoint, "?")[0]
 
 			wr <- result
 
-			continue
+		case POST:
+
+			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get, wu.r.Parameters.Path)
+
+			body, err := encodeBody(&wu)
+			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
+			if err != nil {
+				result.Err = err
+			}
+
+			result.Endpoint = strings.Split(endpoint, "?")[0]
+
+			wr <- result
 		}
 
-		endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
-
-		body, err := encodeBody(&wu)
-		result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
-		if err != nil {
-			result.Err = err
-		}
-		wr <- result
 	}
 
 	wg.Done()
 }
 
-func createEndpoint(url string, par map[string]string) string {
+func createEndpoint(url string, getParam map[string]string, pathParam map[string]string) string {
+
+	for k, v := range pathParam {
+		key := fmt.Sprintf(":%s", k)
+		url = strings.ReplaceAll(url, key, v)
+	}
+
 	endpoint := fmt.Sprintf("%s?", url)
-	for gk, gv := range par {
+	for gk, gv := range getParam {
 		endpoint = fmt.Sprintf("%s%s=%s&", endpoint, gk, gv)
 	}
 
@@ -76,7 +105,9 @@ func doRequest(endpoint string, body io.Reader, wu workUnit, tr *http.Transport)
 		req.Header.Set(k, v)
 	}
 
-	req.Header.Set("Content-Type", wu.r.ContentType)
+	if wu.r.ContentType != "" {
+		req.Header.Set("Content-Type", wu.r.ContentType)
+	}
 
 	client := &http.Client{Transport: tr}
 
@@ -118,9 +149,7 @@ func encodeBody(wu *workUnit) (io.Reader, error) {
 			writer.WriteField(k, v)
 			// TODO: error handler
 			// err := writer.WriteField(k, v)
-			// if err != nil {
-			// 	return &buf, err
-			// }
+
 		}
 		wu.r.ContentType = writer.FormDataContentType()
 		return &buf, nil
@@ -131,8 +160,6 @@ func encodeBody(wu *workUnit) (io.Reader, error) {
 		b := pcollection.MarshalJSONBody(postParam)
 		return bytes.NewBuffer(b), nil
 	}
-
-	// TODO: encode multipart
 
 	// unknown content type
 	return strings.NewReader(wu.r.Body), fmt.Errorf("no encoder for: %s", wu.r.ContentType)
