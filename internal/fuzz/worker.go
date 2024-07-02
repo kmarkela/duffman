@@ -15,6 +15,12 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
+type workUnit struct {
+	r           pcollection.Req
+	word, param string
+	fuzzT       fuzzType
+}
+
 func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Results, tr *http.Transport) {
 
 	for wu := range wq {
@@ -26,7 +32,26 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 			Method:   wu.r.Method,
 		}
 
-		if !wu.parBody {
+		switch wu.fuzzT {
+		case PATH:
+
+			pathParam := make(map[string]string)
+			for k, v := range wu.r.Parameters.Path {
+				pathParam[k] = v
+			}
+
+			u := wu.r.URL
+			for k, v := range pathParam {
+				key := fmt.Sprintf(":%s", k)
+				u = strings.ReplaceAll(u, key, v)
+			}
+
+			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
+			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, strings.NewReader(wu.r.Body), wu, tr)
+
+			wr <- result
+
+		case GET:
 
 			getParam := make(map[string]string)
 			for k, v := range wu.r.Parameters.Get {
@@ -35,22 +60,47 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 			getParam[wu.param] = wu.word
 
 			endpoint := createEndpoint(wu.r.URL, getParam)
-			var r io.Reader = strings.NewReader(wu.r.Body)
-			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, r, wu, tr)
+			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, strings.NewReader(wu.r.Body), wu, tr)
 
 			wr <- result
 
-			continue
+		case POST:
+
+			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
+
+			body, err := encodeBody(&wu)
+			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
+			if err != nil {
+				result.Err = err
+			}
+			wr <- result
 		}
 
-		endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
+		// if !wu.parBody {
 
-		body, err := encodeBody(&wu)
-		result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
-		if err != nil {
-			result.Err = err
-		}
-		wr <- result
+		// 	getParam := make(map[string]string)
+		// 	for k, v := range wu.r.Parameters.Get {
+		// 		getParam[k] = v
+		// 	}
+		// 	getParam[wu.param] = wu.word
+
+		// 	endpoint := createEndpoint(wu.r.URL, getParam)
+		// 	var r io.Reader = strings.NewReader(wu.r.Body)
+		// 	result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, r, wu, tr)
+
+		// 	wr <- result
+
+		// 	continue
+		// }
+
+		// endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
+
+		// body, err := encodeBody(&wu)
+		// result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
+		// if err != nil {
+		// 	result.Err = err
+		// }
+		// wr <- result
 	}
 
 	wg.Done()
@@ -120,9 +170,7 @@ func encodeBody(wu *workUnit) (io.Reader, error) {
 			writer.WriteField(k, v)
 			// TODO: error handler
 			// err := writer.WriteField(k, v)
-			// if err != nil {
-			// 	return &buf, err
-			// }
+
 		}
 		wu.r.ContentType = writer.FormDataContentType()
 		return &buf, nil

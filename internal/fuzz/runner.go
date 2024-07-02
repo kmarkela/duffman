@@ -14,19 +14,12 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-type workUnit struct {
-	r           pcollection.Req
-	word, param string
-	parBody     bool
-	fuzzT       fuzzType
-}
-
 type fuzzType int
 
 const (
-	post fuzzType = iota + 1
-	get
-	path
+	POST fuzzType = iota + 1
+	GET
+	PATH
 )
 
 func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
@@ -88,13 +81,18 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 			v.Headers[hk] = hv
 		}
 
+		for key := range v.Parameters.Path {
+			distrWU(key, wordlist, v, rateLimiter, wq, PATH)
+
+		}
+
 		for key := range v.Parameters.Get {
-			distrWU(key, wordlist, v, rateLimiter, wq, false)
+			distrWU(key, wordlist, v, rateLimiter, wq, GET)
 
 		}
 
 		for key := range v.Parameters.Post {
-			distrWU(key, wordlist, v, rateLimiter, wq, true)
+			distrWU(key, wordlist, v, rateLimiter, wq, PATH)
 		}
 	}
 
@@ -106,7 +104,7 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 
 }
 
-func distrWU(key string, wordlist []string, r pcollection.Req, rl <-chan time.Time, wq chan workUnit, parBody bool) {
+func distrWU(key string, wordlist []string, r pcollection.Req, rl <-chan time.Time, wq chan workUnit, ft fuzzType) {
 
 	for _, word := range wordlist {
 
@@ -115,10 +113,10 @@ func distrWU(key string, wordlist []string, r pcollection.Req, rl <-chan time.Ti
 		}
 
 		wq <- workUnit{
-			r:       r,
-			word:    word,
-			param:   key,
-			parBody: parBody,
+			r:     r,
+			word:  word,
+			param: key,
+			fuzzT: ft,
 		}
 	}
 }
@@ -169,6 +167,10 @@ func resolveVars(env, vars []pcollection.KeyValue, req *pcollection.Req) {
 
 		for pk, pv := range req.Parameters.Post {
 			req.Parameters.Post[strings.ReplaceAll(pk, vk, v.Value)] = strings.ReplaceAll(pv, vk, v.Value)
+		}
+
+		for pk, pv := range req.Parameters.Path {
+			req.Parameters.Path[strings.ReplaceAll(pk, vk, v.Value)] = strings.ReplaceAll(pv, vk, v.Value)
 		}
 
 	}
