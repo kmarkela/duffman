@@ -26,10 +26,9 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 	for wu := range wq {
 
 		result := output.Results{
-			Endpoint: wu.r.URL,
-			Param:    wu.param,
-			Word:     wu.word,
-			Method:   wu.r.Method,
+			Param:  wu.param,
+			Word:   wu.word,
+			Method: wu.r.Method,
 		}
 
 		switch wu.fuzzT {
@@ -40,14 +39,9 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 				pathParam[k] = v
 			}
 
-			u := wu.r.URL
-			for k, v := range pathParam {
-				key := fmt.Sprintf(":%s", k)
-				u = strings.ReplaceAll(u, key, v)
-			}
-
-			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
+			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get, pathParam)
 			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, strings.NewReader(wu.r.Body), wu, tr)
+			result.Endpoint = strings.Split(endpoint, "?")[0]
 
 			wr <- result
 
@@ -59,56 +53,41 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 			}
 			getParam[wu.param] = wu.word
 
-			endpoint := createEndpoint(wu.r.URL, getParam)
+			endpoint := createEndpoint(wu.r.URL, getParam, wu.r.Parameters.Path)
 			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, strings.NewReader(wu.r.Body), wu, tr)
+			result.Endpoint = strings.Split(endpoint, "?")[0]
 
 			wr <- result
 
 		case POST:
 
-			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
+			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get, wu.r.Parameters.Path)
 
 			body, err := encodeBody(&wu)
 			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
 			if err != nil {
 				result.Err = err
 			}
+
+			result.Endpoint = strings.Split(endpoint, "?")[0]
+
 			wr <- result
 		}
 
-		// if !wu.parBody {
-
-		// 	getParam := make(map[string]string)
-		// 	for k, v := range wu.r.Parameters.Get {
-		// 		getParam[k] = v
-		// 	}
-		// 	getParam[wu.param] = wu.word
-
-		// 	endpoint := createEndpoint(wu.r.URL, getParam)
-		// 	var r io.Reader = strings.NewReader(wu.r.Body)
-		// 	result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, r, wu, tr)
-
-		// 	wr <- result
-
-		// 	continue
-		// }
-
-		// endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get)
-
-		// body, err := encodeBody(&wu)
-		// result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, body, wu, tr)
-		// if err != nil {
-		// 	result.Err = err
-		// }
-		// wr <- result
 	}
 
 	wg.Done()
 }
 
-func createEndpoint(url string, par map[string]string) string {
+func createEndpoint(url string, getParam map[string]string, pathParam map[string]string) string {
+
+	for k, v := range pathParam {
+		key := fmt.Sprintf(":%s", k)
+		url = strings.ReplaceAll(url, key, v)
+	}
+
 	endpoint := fmt.Sprintf("%s?", url)
-	for gk, gv := range par {
+	for gk, gv := range getParam {
 		endpoint = fmt.Sprintf("%s%s=%s&", endpoint, gk, gv)
 	}
 
