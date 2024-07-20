@@ -8,7 +8,7 @@ import (
 
 const (
 	delimiter = ".._=.dl.=_.."
-	slice     = "|_!$+"
+	slice     = ".|_!$+_"
 )
 
 func Unmarshal(input string) (map[string]string, error) {
@@ -29,99 +29,67 @@ func parseJSON(data interface{}, prefix string, result map[string]string) {
 		}
 	case []interface{}:
 		for i, v := range value {
-			parseJSON(v, fmt.Sprintf("%s%d%s", prefix, i, delimiter), result)
+			parseJSON(v, fmt.Sprintf("%s%d%s", prefix, i, slice), result)
 		}
 	default:
-		result[prefix[:len(prefix)-1]] = interface2str(value)
+		result[prefix[:len(prefix)-len(delimiter)]] = fmt.Sprintf("%v", value)
 	}
 }
 
-type convertible interface {
-	~int | ~float64 | ~string | ~bool | interface{}
-}
+// func MarshalJSONBody(data map[string]string) []byte {
+// 	var list bool
+// 	if _, ok := data["DM-data-in-slice"]; ok {
+// 		delete(data, "DM-data-in-slice")
+// 		list = true
+// 	}
+// 	jsonData := make(map[string]interface{})
 
-func interface2str[T convertible](value T) string {
-	switch v := any(value).(type) {
-	case string:
-		return v
-	case int:
-		return fmt.Sprintf("%d", v)
-	case float64:
-		return fmt.Sprintf("%f", v)
-	case bool:
-		return fmt.Sprintf("%t", v)
-	default:
-		return fmt.Sprintf("%v", v)
-	}
-}
+// 	for key, value := range data {
+// 		// Split the key into parts
+// 		keys := strings.Split(key, ".")
 
-// func Unmarshal(s string) (map[string]string, error) {
-
-// 	var data map[string]interface{} = make(map[string]interface{})
-// 	var dataList []map[string]interface{}
-// 	var result map[string]string
-
-// 	switch {
-// 	case strings.HasPrefix(s, "["):
-// 		if err := json.Unmarshal([]byte(s), &dataList); err != nil {
-// 			return result, fmt.Errorf("error parsing JSON: %s", err.Error())
+// 		// Traverse the keys to set the value in jsonData
+// 		temp := jsonData
+// 		for i := 0; i < len(keys)-1; i++ {
+// 			if _, ok := temp[keys[i]]; !ok {
+// 				temp[keys[i]] = make(map[string]interface{})
+// 			}
+// 			temp = temp[keys[i]].(map[string]interface{})
 // 		}
-// 		// TODO: Fuzzing only firs element in the list. update to fuzz all
-// 		data = dataList[0]
-// 		data["DM-data-in-slice"] = struct{}{}
-// 	default:
-// 		if err := json.Unmarshal([]byte(s), &data); err != nil {
-// 			return result, fmt.Errorf("error parsing JSON: %s", err.Error())
-// 		}
+// 		temp[keys[len(keys)-1]] = value
 // 	}
 
-// 	result = parseJSONBody(data, "")
+// 	var d []byte
+// 	var err error
+// 	if list {
+// 		ljd := make([]map[string]interface{}, 1)
+// 		ljd[0] = jsonData
 
-// 	return result, nil
-// }
+// 		d, err = json.Marshal(ljd)
+// 		if err != nil {
+// 			// TODO: log it in verbose
+// 			return nil
+// 		}
 
-// func parseSlice(data []interface{}, prefix string) map[string]string {
-// 	for i, v := range data {
-
+// 	} else {
+// 		d, err = json.Marshal(jsonData)
+// 		if err != nil {
+// 			// TODO: log it in verbose
+// 			return nil
+// 		}
 // 	}
+// 	return d
 // }
 
-func parseJSONBody(data map[string]interface{}, prefix string) map[string]string {
-	result := make(map[string]string)
-
-	for key, value := range data {
-		switch v := value.(type) {
-		case map[string]interface{}:
-			// Nested object, recurse
-			nestedResult := parseJSONBody(v, prefix+key+".")
-			for nestedKey, nestedValue := range nestedResult {
-				result[nestedKey] = nestedValue
-			}
-		// TODO: add parse of list
-		// case []interface{}:
-		default:
-			// Leaf node, add to the result map
-			result[prefix+key] = fmt.Sprintf("%v", value)
-		}
-	}
-
-	return result
-}
-
-func MarshalJSONBody(data map[string]string) []byte {
-	var list bool
-	if _, ok := data["DM-data-in-slice"]; ok {
-		delete(data, "DM-data-in-slice")
-		list = true
-	}
-	jsonData := make(map[string]interface{})
+func Marshal(jMap map[string]string) ([]byte, error) {
+	data := make(map[string]interface{})
 
 	for key, value := range data {
 		// Split the key into parts
-		keys := strings.Split(key, ".")
+		keys := strings.Split(key, delimiter)
 
 		// Traverse the keys to set the value in jsonData
-		temp := jsonData
+		temp := data
 		for i := 0; i < len(keys)-1; i++ {
 			if _, ok := temp[keys[i]]; !ok {
 				temp[keys[i]] = make(map[string]interface{})
@@ -131,24 +99,9 @@ func MarshalJSONBody(data map[string]string) []byte {
 		temp[keys[len(keys)-1]] = value
 	}
 
-	var d []byte
-	var err error
-	if list {
-		ljd := make([]map[string]interface{}, 1)
-		ljd[0] = jsonData
-
-		d, err = json.Marshal(ljd)
-		if err != nil {
-			// TODO: log it in verbose
-			return nil
-		}
-
-	} else {
-		d, err = json.Marshal(jsonData)
-		if err != nil {
-			// TODO: log it in verbose
-			return nil
-		}
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
 	}
-	return d
+	return jsonData, nil
 }
