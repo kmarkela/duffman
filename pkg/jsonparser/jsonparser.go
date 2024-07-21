@@ -29,6 +29,8 @@ func parseJSON(data interface{}, prefix string, result map[string]string) {
 		}
 	case []interface{}:
 		for i, v := range value {
+			// TODO : parse []string, []int here
+			// fmt.Println(reflect.TypeOf(v))
 			parseJSON(v, fmt.Sprintf("%s%d%s", prefix, i, slice), result)
 		}
 	default:
