@@ -8,7 +8,7 @@ import (
 
 const (
 	delimiter = ".._=.dl.=_.."
-	slice     = ".|_!$+_"
+	slice     = "_sl1c3_"
 )
 
 func Unmarshal(input string) (map[string]string, error) {
@@ -27,85 +27,57 @@ func parseJSON(data interface{}, prefix string, result map[string]string) {
 		for k, v := range value {
 			parseJSON(v, prefix+k+delimiter, result)
 		}
+	// parse first element of a slice
 	case []interface{}:
-		for i, v := range value {
-			// TODO : parse []string, []int here
-			// fmt.Println(reflect.TypeOf(v))
-			parseJSON(v, fmt.Sprintf("%s%d%s", prefix, i, slice), result)
-		}
+		parseJSON(value[0], prefix+slice, result)
+		// result[prefix[:len(prefix)-len(delimiter)]+slice] = ""
 	default:
 		result[prefix[:len(prefix)-len(delimiter)]] = fmt.Sprintf("%v", value)
 	}
 }
 
-// func MarshalJSONBody(data map[string]string) []byte {
-// 	var list bool
-// 	if _, ok := data["DM-data-in-slice"]; ok {
-// 		delete(data, "DM-data-in-slice")
-// 		list = true
-// 	}
-// 	jsonData := make(map[string]interface{})
-
-// 	for key, value := range data {
-// 		// Split the key into parts
-// 		keys := strings.Split(key, ".")
-
-// 		// Traverse the keys to set the value in jsonData
-// 		temp := jsonData
-// 		for i := 0; i < len(keys)-1; i++ {
-// 			if _, ok := temp[keys[i]]; !ok {
-// 				temp[keys[i]] = make(map[string]interface{})
-// 			}
-// 			temp = temp[keys[i]].(map[string]interface{})
-// 		}
-// 		temp[keys[len(keys)-1]] = value
-// 	}
-
-// 	var d []byte
-// 	var err error
-// 	if list {
-// 		ljd := make([]map[string]interface{}, 1)
-// 		ljd[0] = jsonData
-
-// 		d, err = json.Marshal(ljd)
-// 		if err != nil {
-// 			// TODO: log it in verbose
-// 			return nil
-// 		}
-
-// 	} else {
-// 		d, err = json.Marshal(jsonData)
-// 		if err != nil {
-// 			// TODO: log it in verbose
-// 			return nil
-// 		}
-// 	}
-// 	return d
-// }
-
-func Marshal(jMap map[string]string) ([]byte, error) {
-	data := make(map[string]interface{})
+func Marshal(data map[string]string) ([]byte, error) {
+	jsonData := make(map[string]interface{})
 
 	for key, value := range data {
 		// Split the key into parts
 		keys := strings.Split(key, delimiter)
 
 		// Traverse the keys to set the value in jsonData
-		temp := data
+		temp := jsonData
 		for i := 0; i < len(keys)-1; i++ {
+
 			if _, ok := temp[keys[i]]; !ok {
 				temp[keys[i]] = make(map[string]interface{})
+
 			}
 			temp = temp[keys[i]].(map[string]interface{})
+
 		}
-		temp[keys[len(keys)-1]] = value
+		if strings.Contains(keys[len(keys)-1], slice) {
+			var tmpLst []map[string]interface{}
+			k := strings.Split(keys[len(keys)-1], slice)[1]
+			if _, ok := temp["test"]; !ok {
+				tmpLst = make([]map[string]interface{}, 1)
+				tmpLst[0] = make(map[string]interface{}, 1)
+			} else {
+				tmpLst = temp["test"].([]map[string]interface{})
+			}
+			tmpLst[0][k] = value
+			temp["test"] = tmpLst
+			fmt.Println(temp)
+
+		} else {
+			temp[keys[len(keys)-1]] = value
+			fmt.Println(temp)
+		}
 	}
 
-	jsonData, err := json.Marshal(data)
+	d, err := json.Marshal(jsonData)
 	if err != nil {
 		return nil, err
 	}
-	return jsonData, nil
+	return d, nil
 }
 
 func Param2Srt(param string) string {
