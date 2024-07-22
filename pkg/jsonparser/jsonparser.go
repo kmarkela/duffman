@@ -107,3 +107,7 @@ func Marshal(jMap map[string]string) ([]byte, error) {
 	}
 	return jsonData, nil
 }
+
+func Param2Srt(param string) string {
+	return strings.ReplaceAll(param, delimiter, ".")
+}
