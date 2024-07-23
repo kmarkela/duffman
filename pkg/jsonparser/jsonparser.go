@@ -32,7 +32,8 @@ func parseJSON(data interface{}, prefix string, result map[string]string) {
 		parseJSON(value[0], prefix+slice, result)
 		result[slice] = result[slice] + strings.TrimSuffix(prefix, delimiter) + delimiter + delimiter
 	default:
-		result[prefix[:len(prefix)-len(delimiter)]] = fmt.Sprintf("%v", value)
+		// result[prefix[:len(prefix)-len(delimiter)]] = fmt.Sprintf("%v", value)
+		result[strings.TrimSuffix(prefix, delimiter)] = fmt.Sprintf("%v", value)
 	}
 }
 
