@@ -30,7 +30,7 @@ func parseJSON(data interface{}, prefix string, result map[string]string) {
 	// parse first element of a slice
 	case []interface{}:
 		parseJSON(value[0], prefix+slice, result)
-		// result[prefix[:len(prefix)-len(delimiter)]+slice] = ""
+		result[slice] = result[slice] + strings.TrimSuffix(prefix, delimiter) + delimiter + delimiter
 	default:
 		result[prefix[:len(prefix)-len(delimiter)]] = fmt.Sprintf("%v", value)
 	}
@@ -40,6 +40,9 @@ func Marshal(data map[string]string) ([]byte, error) {
 	jsonData := make(map[string]interface{})
 
 	for key, value := range data {
+		if key == slice {
+			continue
+		}
 		// Split the key into parts
 		keys := strings.Split(key, delimiter)
 
@@ -57,20 +60,46 @@ func Marshal(data map[string]string) ([]byte, error) {
 		if strings.Contains(keys[len(keys)-1], slice) {
 			var tmpLst []map[string]interface{}
 			k := strings.Split(keys[len(keys)-1], slice)[1]
-			if _, ok := temp["test"]; !ok {
+			if _, ok := temp[slice]; !ok {
 				tmpLst = make([]map[string]interface{}, 1)
 				tmpLst[0] = make(map[string]interface{}, 1)
 			} else {
-				tmpLst = temp["test"].([]map[string]interface{})
+				tmpLst = temp[slice].([]map[string]interface{})
 			}
 			tmpLst[0][k] = value
-			temp["test"] = tmpLst
-			fmt.Println(temp)
+			temp[slice] = tmpLst
 
 		} else {
 			temp[keys[len(keys)-1]] = value
-			fmt.Println(temp)
 		}
+	}
+
+	var jd interface{}
+	for _, v := range strings.Split(data[slice], delimiter+delimiter) {
+		if v == "" {
+			ljd := make([]interface{}, 1)
+			ljd[0] = jsonData[slice]
+			jd = ljd
+			continue
+		}
+		var tPr interface{}
+		temp := jsonData
+		keys := strings.Split(v, delimiter)
+		for _, v := range keys {
+			tPr = temp
+			// for i := 0; i < len(keys)-1; i++ {
+			temp = temp[v].(map[string]interface{})
+		}
+		// fmt.Println(temp[slice])
+		ljd := make([]interface{}, 1)
+		ljd[0] = temp[slice]
+		tPr.(map[string]interface{})[keys[len(keys)-1]] = ljd
+		jd = jsonData
+		// fmt.Println(tPr.(map[string]interface{})[keys[len(keys)-1]])
+	}
+
+	if jd == nil {
+		jd = jsonData
 	}
 
 	d, err := json.Marshal(jsonData)
@@ -80,6 +109,6 @@ func Marshal(data map[string]string) ([]byte, error) {
 	return d, nil
 }
 
-func Param2Srt(param string) string {
+func Param2Str(param string) string {
 	return strings.ReplaceAll(param, delimiter, ".")
 }
