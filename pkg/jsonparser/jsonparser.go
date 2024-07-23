@@ -8,7 +8,7 @@ import (
 
 const (
 	delimiter = ".._=.dl.=_.."
-	slice     = "_sl1c3_"
+	Slice     = "_sl1c3_"
 )
 
 func Unmarshal(input string) (map[string]string, error) {
@@ -29,8 +29,8 @@ func parseJSON(data interface{}, prefix string, result map[string]string) {
 		}
 	// parse first element of a slice
 	case []interface{}:
-		parseJSON(value[0], prefix+slice, result)
-		result[slice] = result[slice] + strings.TrimSuffix(prefix, delimiter) + delimiter + delimiter
+		parseJSON(value[0], prefix+Slice, result)
+		result[Slice] = result[Slice] + strings.TrimSuffix(prefix, delimiter) + delimiter + delimiter
 	default:
 		// result[prefix[:len(prefix)-len(delimiter)]] = fmt.Sprintf("%v", value)
 		result[strings.TrimSuffix(prefix, delimiter)] = fmt.Sprintf("%v", value)
@@ -41,7 +41,7 @@ func Marshal(data map[string]string) ([]byte, error) {
 	jsonData := make(map[string]interface{})
 
 	for key, value := range data {
-		if key == slice {
+		if key == Slice {
 			continue
 		}
 		// Split the key into parts
@@ -58,23 +58,23 @@ func Marshal(data map[string]string) ([]byte, error) {
 			temp = temp[keys[i]].(map[string]interface{})
 
 		}
-		if strings.Contains(keys[len(keys)-1], slice) {
+		if strings.Contains(keys[len(keys)-1], Slice) {
 			var tmpLst []map[string]interface{}
-			k := strings.Split(keys[len(keys)-1], slice)[1]
-			if _, ok := temp[slice]; !ok {
+			k := strings.Split(keys[len(keys)-1], Slice)[1]
+			if _, ok := temp[Slice]; !ok {
 				tmpLst = make([]map[string]interface{}, 1)
 				tmpLst[0] = make(map[string]interface{}, 1)
 			} else {
-				tmpLst = temp[slice].([]map[string]interface{})
+				tmpLst = temp[Slice].([]map[string]interface{})
 			}
 
 			tmpLst[0][k] = value
-			temp[slice] = tmpLst
+			temp[Slice] = tmpLst
 
 			if k == "" {
 				tmpLst := make([]interface{}, 1)
 				tmpLst[0] = value
-				temp[slice] = tmpLst
+				temp[Slice] = tmpLst
 			}
 
 		} else {
@@ -83,9 +83,9 @@ func Marshal(data map[string]string) ([]byte, error) {
 	}
 
 	var jd interface{}
-	for _, v := range strings.Split(data[slice], delimiter+delimiter) {
+	for _, v := range strings.Split(data[Slice], delimiter+delimiter) {
 		if v == "" {
-			jd = jsonData[slice]
+			jd = jsonData[Slice]
 			continue
 		}
 		var tPr interface{}
@@ -95,7 +95,7 @@ func Marshal(data map[string]string) ([]byte, error) {
 			tPr = temp
 			temp = temp[v].(map[string]interface{})
 		}
-		tPr.(map[string]interface{})[keys[len(keys)-1]] = temp[slice]
+		tPr.(map[string]interface{})[keys[len(keys)-1]] = temp[Slice]
 		jd = jsonData
 	}
 
@@ -103,7 +103,7 @@ func Marshal(data map[string]string) ([]byte, error) {
 		jd = jsonData
 	}
 
-	d, err := json.Marshal(jsonData)
+	d, err := json.Marshal(jd)
 	if err != nil {
 		return nil, err
 	}
