@@ -70,7 +70,7 @@ func RenderTable(rl []Results) {
 	t.AppendHeader(table.Row{"Enpoint", "Method", "Parameter", "FUZZ", "Code", "Length", "Time"})
 
 	for _, v := range rl {
-		t.AppendRows([]table.Row{{v.Endpoint, v.Method, jsonparser.Param2Srt(v.Param), v.Word, v.Code, v.Length, v.Time}})
+		t.AppendRows([]table.Row{{v.Endpoint, v.Method, jsonparser.Param2Str(v.Param), v.Word, v.Code, v.Length, v.Time}})
 	}
 
 	if len(rl) > 1 {
