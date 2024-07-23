@@ -3,6 +3,8 @@ package pcollection
 import (
 	"fmt"
 	"strings"
+
+	"github.com/kmarkela/duffman/pkg/jsonparser"
 )
 
 func buildReq(r *Request) Req {
@@ -74,7 +76,7 @@ func parseBody(b Body) (map[string]string, string, string) {
 	switch b.Options.Raw.Lang {
 	case "json":
 		// TODO: log error
-		params, _ := UnmarshalJSONBody(b.Raw)
+		params, _ := jsonparser.Unmarshal(b.Raw)
 		return params, "application/json", ""
 	// TODO: add xml parser
 	// case "xml":
