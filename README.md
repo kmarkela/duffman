@@ -261,3 +261,12 @@ We welcome contributions! Please read our [CONTRIBUTING](./CONTRIBUTING.md) for 
 
 - Kanstantsin Markelau 
 - Sam Cosentino 
+
+### Limitations 
+
+DuffMan can fuzz `JSON` bodies, but with the following limitations:
+
+1. DuffMan only fuzzes the first element in an array.
+2. Complex schemas with multiple nested arrays may not be reconstructed accurately.
+
+Exaples of tested `JSON` can be found [here](./test/json.md)

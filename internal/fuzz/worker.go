@@ -13,6 +13,7 @@ import (
 
 	"github.com/kmarkela/duffman/internal/output"
 	"github.com/kmarkela/duffman/internal/pcollection"
+	"github.com/kmarkela/duffman/pkg/jsonparser"
 )
 
 type workUnit struct {
@@ -157,7 +158,7 @@ func encodeBody(wu *workUnit) (io.Reader, error) {
 
 	// encode json
 	if wu.r.ContentType == "application/json" {
-		b := pcollection.MarshalJSONBody(postParam)
+		b, _ := jsonparser.Marshal(postParam)
 		return bytes.NewBuffer(b), nil
 	}
 

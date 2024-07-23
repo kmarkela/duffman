@@ -31,11 +31,11 @@ func New(colF, envF string, vars []string) (Collection, error) {
 	}
 
 	for k, v := range vl {
-		for _, j := range collection.Variables {
+		for i, j := range collection.Variables {
 			if strings.EqualFold(j.Key, k) {
 				continue
 			}
-			j.Value = v
+			collection.Variables[i].Value = v
 		}
 
 	}
@@ -97,5 +97,3 @@ func pVars(vars []string) (map[string]string, error) {
 
 	return rh, nil
 }
-
-func (c *Collection) ResolveVars() {}
