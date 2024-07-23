@@ -71,7 +71,6 @@ func Marshal(data map[string]string) ([]byte, error) {
 
 			tmpLst[0][k] = value
 			temp[Slice] = tmpLst
-
 			if k == "" {
 				tmpLst := make([]interface{}, 1)
 				tmpLst[0] = value
@@ -112,5 +111,5 @@ func Marshal(data map[string]string) ([]byte, error) {
 }
 
 func Param2Str(param string) string {
-	return strings.ReplaceAll(param, delimiter, ".")
+	return strings.ReplaceAll(strings.ReplaceAll(param, delimiter, "."), Slice, "")
 }
