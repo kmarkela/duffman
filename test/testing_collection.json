@@ -51,7 +51,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "[{\"test1\":[{\n    \"test2\": \"1\",\n    \"test3\": [1,2]\n}\n], \"test2\": {\n    \"test3\": {\n        \"test4\": 8\n    }\n}},\n{\"tr\":1}]",
+											"raw": "{\n  \"company\": {\n    \"name\": \"Tech Corp\",\n    \"address\": {\n      \"street\": \"123 Tech Road\",\n      \"city\": \"Innovate City\",\n      \"postalCode\": \"12345\"\n    },\n    \"employees\": [\n      {\n        \"firstName\": \"Alice\",\n        \"lastName\": \"Johnson\",\n        \"age\": 28,\n        \"role\": \"Engineer\"\n      },\n      {\n        \"firstName\": \"Bob\",\n        \"lastName\": \"Brown\",\n        \"age\": 35,\n        \"role\": \"Manager\"\n      }\n    ]\n  }\n}",
 											"options": {
 												"raw": {
 													"language": "json"
