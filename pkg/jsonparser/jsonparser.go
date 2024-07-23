@@ -13,10 +13,11 @@ const (
 
 func Unmarshal(input string) (map[string]string, error) {
 	var data interface{}
+
+	result := make(map[string]string)
 	if err := json.Unmarshal([]byte(input), &data); err != nil {
 		return nil, err
 	}
-	result := make(map[string]string)
 	parseJSON(data, "", result)
 	return result, nil
 }
