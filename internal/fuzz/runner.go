@@ -12,6 +12,7 @@ import (
 
 	"github.com/kmarkela/duffman/internal/output"
 	"github.com/kmarkela/duffman/internal/pcollection"
+	"github.com/kmarkela/duffman/pkg/jsonparser"
 )
 
 type fuzzType int
@@ -111,6 +112,10 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 func distrWU(key string, wordlist []string, r pcollection.Req, rl <-chan time.Time, wq chan workUnit, ft fuzzType) {
 
 	for _, word := range wordlist {
+
+		if key == jsonparser.Slice {
+			continue
+		}
 
 		if rl != nil {
 			<-rl // Wait for rate limit if provided
