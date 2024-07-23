@@ -87,15 +87,10 @@ func Marshal(data map[string]string) ([]byte, error) {
 		keys := strings.Split(v, delimiter)
 		for _, v := range keys {
 			tPr = temp
-			// for i := 0; i < len(keys)-1; i++ {
 			temp = temp[v].(map[string]interface{})
 		}
-		// fmt.Println(temp[slice])
-		ljd := make([]interface{}, 1)
-		ljd[0] = temp[slice]
-		tPr.(map[string]interface{})[keys[len(keys)-1]] = ljd
+		tPr.(map[string]interface{})[keys[len(keys)-1]] = temp[slice]
 		jd = jsonData
-		// fmt.Println(tPr.(map[string]interface{})[keys[len(keys)-1]])
 	}
 
 	if jd == nil {
