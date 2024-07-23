@@ -67,8 +67,15 @@ func Marshal(data map[string]string) ([]byte, error) {
 			} else {
 				tmpLst = temp[slice].([]map[string]interface{})
 			}
+
 			tmpLst[0][k] = value
 			temp[slice] = tmpLst
+
+			if k == "" {
+				tmpLst := make([]interface{}, 1)
+				tmpLst[0] = value
+				temp[slice] = tmpLst
+			}
 
 		} else {
 			temp[keys[len(keys)-1]] = value
