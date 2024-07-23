@@ -48,3 +48,46 @@
   }
 }
 ```
+
+
+Usage: 
+```golang
+func main() {
+	jsonStr := `{
+  "company": {
+    "name": "Tech Corp",
+    "address": {
+      "street": "123 Tech Road",
+      "city": "Innovate City",
+      "postalCode": "12345"
+    },
+    "employees": [
+      {
+        "firstName": "Alice",
+        "lastName": "Johnson",
+        "age": 28,
+        "role": "Engineer"
+      },
+      {
+        "firstName": "Bob",
+        "lastName": "Brown",
+        "age": 35,
+        "role": "Manager"
+      }
+    ]
+  }
+}`
+	flatMap, err := Unmarshal(jsonStr)
+	if err != nil {
+		log.Fatalf("Error unmarshalling JSON: %v", err)
+	}
+	fmt.Println("Flattened Map:", flatMap)
+
+	// Marshal flattened map back to JSON
+	jsonData, err := Marshal(flatMap)
+	if err != nil {
+		log.Fatalf("Error marshalling JSON: %v", err)
+	}
+	fmt.Println("JSON Data:", string(jsonData))
+}
+```
