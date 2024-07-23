@@ -85,9 +85,7 @@ func Marshal(data map[string]string) ([]byte, error) {
 	var jd interface{}
 	for _, v := range strings.Split(data[slice], delimiter+delimiter) {
 		if v == "" {
-			ljd := make([]interface{}, 1)
-			ljd[0] = jsonData[slice]
-			jd = ljd
+			jd = jsonData[slice]
 			continue
 		}
 		var tPr interface{}
