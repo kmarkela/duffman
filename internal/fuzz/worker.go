@@ -39,6 +39,7 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 			for k, v := range wu.r.Parameters.Path {
 				pathParam[k] = v
 			}
+			pathParam[wu.param] = wu.word
 
 			endpoint := createEndpoint(wu.r.URL, wu.r.Parameters.Get, pathParam)
 			result.Code, result.Length, result.Time, result.Err = doRequest(endpoint, strings.NewReader(wu.r.Body), wu, tr)
