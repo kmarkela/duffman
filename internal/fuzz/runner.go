@@ -87,6 +87,8 @@ func (f *Fuzzer) Run(col *pcollection.Collection, fname string) {
 		}
 
 		for key := range v.Parameters.Path {
+			fmt.Println(v.Parameters.Path)
+			fmt.Println(v.URL)
 			distrWU(key, wordlist, v, rateLimiter, wq, PATH)
 
 		}
