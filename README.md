@@ -20,10 +20,10 @@ cd duffman
 go build -o duffman
 ```
 
-### Using `go get`
+### Using `go install`
 
 ```sh
-go get github.com/kmarkela/duffman
+go install github.com/kmarkela/duffman@latest
 ```
 
 ### Binaries 
