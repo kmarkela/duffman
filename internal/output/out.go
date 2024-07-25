@@ -59,7 +59,7 @@ func moveCursorUp(n int) {
 
 // clearLine clears the entire line.
 func clearLine() {
-	// fmt.Print("\033[2K")
+	fmt.Print("\033[2K")
 }
 
 func RenderTable(rl []Results) {
