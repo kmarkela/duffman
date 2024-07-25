@@ -17,6 +17,7 @@ type Fuzzer struct {
 func New(workers, maxReq, responseT int, headers []string, proxy string, blacklist []int) (Fuzzer, error) {
 
 	var fuzzer = Fuzzer{}
+	var tr = http.Transport{}
 
 	// parse headers
 	h, err := pheaders(headers)
@@ -24,10 +25,15 @@ func New(workers, maxReq, responseT int, headers []string, proxy string, blackli
 		return fuzzer, err
 	}
 
-	// parse proxy
-	proxyUrl, err := url.Parse(proxy)
-	if err != nil {
-		return fuzzer, err
+	if proxy != "" {
+		// parse proxy
+		proxyUrl, err := url.Parse(proxy)
+		if err != nil {
+			return fuzzer, err
+		}
+
+		tr = http.Transport{Proxy: http.ProxyURL(proxyUrl)}
+
 	}
 	return Fuzzer{
 		headers:   h,
@@ -35,7 +41,7 @@ func New(workers, maxReq, responseT int, headers []string, proxy string, blackli
 		responseT: responseT,
 		maxReq:    maxReq,
 		blacklist: blacklist,
-		tr:        &http.Transport{Proxy: http.ProxyURL(proxyUrl)},
+		tr:        &tr,
 	}, nil
 }
 
