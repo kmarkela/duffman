@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/kmarkela/duffman/internal/pcollection"
+	"github.com/kmarkela/duffman/pkg/jsonparser"
 )
 
 // Output types
@@ -87,9 +88,15 @@ func PrintCol(t OutputType, c *pcollection.Collection) {
 
 		}
 
-		if len(v.Parameters.Post) > 0 {
+		if len(v.Parameters.Post) > 0 && v.ContentType != "application/json" {
 			fmt.Printf("    * Post Params:\n")
 			printMap(6, ">", v.Parameters.Post)
+		}
+
+		if len(v.Parameters.Post) > 0 && v.ContentType == "application/json" {
+			fmt.Printf("    * Post JSON:\n")
+			b, _ := jsonparser.Marshal(v.Parameters.Post)
+			fmt.Printf("      > %s\n", string(b))
 		}
 	}
 
