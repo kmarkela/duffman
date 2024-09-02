@@ -5,6 +5,7 @@ type Collection struct {
 	Variables []KeyValue
 	Requests  []Req
 	Env       []KeyValue
+	Schema    Schema
 }
 
 type Req struct {
