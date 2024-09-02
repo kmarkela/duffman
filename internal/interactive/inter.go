@@ -1,6 +1,7 @@
 package interactive
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -33,4 +34,7 @@ func New(proxy string) (Inter, error) {
 
 }
 
-func (i *Inter) Run(col *pcollection.Collection) {}
+func (i *Inter) Run(col *pcollection.Collection) {
+
+	fmt.Println(col.Schema)
+}
