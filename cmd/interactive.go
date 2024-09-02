@@ -29,7 +29,7 @@ var interCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		coll, err := pcollection.New(collF, envF, make([]string, 0))
+		coll, err := pcollection.New(collF, envF, nil)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -45,6 +45,6 @@ var interCmd = &cobra.Command{
 }
 
 func init() {
-	fuzzCmd.Flags().StringP("proxy", "p", "", "proxy")
+	interCmd.Flags().StringP("proxy", "p", "", "proxy")
 	rootCmd.AddCommand(interCmd)
 }
