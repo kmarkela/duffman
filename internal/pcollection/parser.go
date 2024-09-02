@@ -39,11 +39,12 @@ func New(colF, envF string, vars []string) (Collection, error) {
 
 	}
 
-	reqLt, _, err := getReqLt(&rawCollection)
+	reqLt, sc, err := getReqLt(&rawCollection)
 	if err != nil {
 		return collection, fmt.Errorf("cannot process Collection. Err: %s", err)
 	}
 	collection.Requests = reqLt
+	collection.Schema = sc
 
 	if envF == "" {
 		return collection, nil
