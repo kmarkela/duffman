@@ -1,0 +1,119 @@
+package interactive
+
+import (
+	"fmt"
+	"os"
+
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+)
+
+var (
+	titleStyle  = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FF6F61"))
+	cursorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF6F61"))
+)
+
+// Define our model with a state indicating whether we are in the main list or a sublist.
+type model struct {
+	cursor   int
+	choice   int
+	showSub  bool
+	items    []string
+	sublists map[int][]string
+}
+
+// Initialize the model with main items and their corresponding sublists.
+func initialModel() model {
+	return model{
+		items: []string{"Go Programming", "Bubble Tea TUI", "Fancy Lists", "CLI Tools", "Concurrency in Go"},
+		sublists: map[int][]string{
+			0: {"Introduction", "Syntax", "Packages", "Modules"},
+			1: {"Overview", "Creating Models", "Rendering Views", "Handling Input"},
+			2: {"Basic Lists", "Lists with Descriptions", "Sublists"},
+			3: {"Creating CLI Tools", "Flags", "Arguments", "Subcommands"},
+			4: {"Goroutines", "Channels", "Select", "Mutexes"},
+		},
+	}
+}
+
+func (m model) Init() tea.Cmd {
+	return nil
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+c", "q":
+			return m, tea.Quit
+
+		case "enter":
+			if !m.showSub {
+				// If we're in the main list, toggle to show the sublist.
+				m.showSub = true
+				m.choice = m.cursor
+				m.cursor = 0 // Reset cursor for sublist
+			} else {
+				// If we're in a sublist, we can handle the action accordingly.
+				fmt.Println("Selected sublist item:", m.sublists[m.choice][m.cursor])
+				return m, tea.Quit
+			}
+
+		case "backspace", "esc":
+			// Go back to the main list if viewing a sublist
+			if m.showSub {
+				m.showSub = false
+				m.cursor = m.choice
+			}
+
+		case "up", "k":
+			if m.cursor > 0 {
+				m.cursor--
+			}
+
+		case "down", "j":
+			if m.showSub && m.cursor < len(m.sublists[m.choice])-1 {
+				m.cursor++
+			} else if !m.showSub && m.cursor < len(m.items)-1 {
+				m.cursor++
+			}
+		}
+	}
+
+	return m, nil
+}
+
+func (m model) View() string {
+	var s string
+	if m.showSub {
+		// Display the sublist for the selected item
+		s = fmt.Sprintf("\nViewing sublist for %s (press ESC to go back):\n\n", m.items[m.choice])
+		for i, item := range m.sublists[m.choice] {
+			cursor := " "
+			if m.cursor == i {
+				cursor = cursorStyle.Render("→")
+			}
+			s += fmt.Sprintf("%s %s\n", cursor, titleStyle.Render(item))
+		}
+	} else {
+		// Display the main list
+		s = "\nSelect an item (press q to quit):\n\n"
+		for i, item := range m.items {
+			cursor := " "
+			if m.cursor == i {
+				cursor = cursorStyle.Render("→")
+			}
+			s += fmt.Sprintf("%s %s\n", cursor, titleStyle.Render(item))
+		}
+	}
+	s += "\nUse arrow keys to navigate, press enter to select, ESC to go back, and q to quit.\n"
+	return s
+}
+
+func RenderList() {
+	p := tea.NewProgram(initialModel())
+	if err := p.Start(); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+}
