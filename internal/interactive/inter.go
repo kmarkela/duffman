@@ -55,4 +55,6 @@ func (i *Inter) Run(col *pcollection.Collection) {
 	// for _, v := range col.Schema.Nodes {
 	printSh(0, col.Schema.Nodes)
 	// }
+
+	RenderList(col.Schema.Nodes)
 }
