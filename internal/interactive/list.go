@@ -39,7 +39,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	}
 
 	if i.Node != nil {
-		i.Name = fmt.Sprintf("📁 %s", i.Name)
+		i.Name = fmt.Sprintf("📁 %s", i.Name) // Display folders with an icon
 	}
 
 	str := fmt.Sprintf("[ ] %s", i.Name)
@@ -56,16 +56,16 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 
 type model struct {
 	list     list.Model
-	choice   *item
 	quitting bool
-	pro      *tea.Program
+	stack    []item   // Stack to keep track of node levels
+	path     []string // To keep the current path for display
 }
 
 func (m model) Init() tea.Cmd {
 	return nil
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.list.SetWidth(msg.Width)
@@ -79,10 +79,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			i, ok := m.list.SelectedItem().(item)
-			if ok {
-				m.choice = &i
+			if ok && len(i.Node) > 0 { // If selected item has a sublist
+				m.stack = append(m.stack, i)    // Push current items to stack
+				m.path = append(m.path, i.Name) // Update path
+				// fmt.Println("Path:", m.path)
+				m.updateList(i.Node)
+			} else if ok {
+				fmt.Println("Selected sublist item:", i.Name)
+				return m, tea.Quit
 			}
-			return m, tea.Quit
+
+		case "backspace", "esc":
+			if len(m.stack) > 0 {
+				// Go back to the previous list
+				m.path = m.path[:len(m.path)-1] // Update path
+				// fmt.Println("Path:", m.path)
+				last := m.stack[len(m.stack)-1] // Get last items from stack
+				// fmt.Println("Selected sublist item:", last.Name)
+				m.stack = m.stack[:len(m.stack)-1]
+				// fmt.Println("Stack:", m.stack)
+				m.updateList(last.Node)
+			}
 		}
 	}
 
@@ -92,19 +109,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	if m.choice != nil {
-		// return
-		m.pro.Quit()
-		RenderList(m.choice.Node)
-	}
 	if m.quitting {
 		return quitTextStyle.Render("Not hungry? That’s cool.")
 	}
-	return "\n" + m.list.View()
+
+	header := fmt.Sprintf("\nCurrent Path: %s\n", strings.Join(m.path, " > ")) // Display current path
+	return header + "\n" + m.list.View()
+}
+
+// Function to update the list model with new items
+func (m *model) updateList(nl pcollection.NodeList) {
+	items := []list.Item{}
+
+	for _, k := range nl {
+		items = append(items, item(k))
+	}
+
+	m.list.SetItems(items)
 }
 
 func RenderList(nl pcollection.NodeList) {
-
 	items := []list.Item{}
 
 	for _, k := range nl {
@@ -120,14 +144,10 @@ func RenderList(nl pcollection.NodeList) {
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 
-	m := model{list: l}
+	m := model{list: l, stack: make([]item, 0), path: []string{"Main List"}}
 
-	pro := tea.NewProgram(m)
-	m.pro = pro
-
-	if _, err := pro.Run(); err != nil {
+	if _, err := tea.NewProgram(&m).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
-
 }
