@@ -58,6 +58,7 @@ type model struct {
 	list     list.Model
 	choice   *item
 	quitting bool
+	pro      *tea.Program
 }
 
 func (m model) Init() tea.Cmd {
@@ -93,12 +94,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	if m.choice != nil {
 		// return
-		items := []list.Item{}
-
-		for _, k := range m.choice.Node {
-			items = append(items, item(k))
-		}
-		m.list.SetItems(items)
+		m.pro.Quit()
+		RenderList(m.choice.Node)
 	}
 	if m.quitting {
 		return quitTextStyle.Render("Not hungry? That’s cool.")
@@ -125,8 +122,12 @@ func RenderList(nl pcollection.NodeList) {
 
 	m := model{list: l}
 
-	if _, err := tea.NewProgram(m).Run(); err != nil {
+	pro := tea.NewProgram(m)
+	m.pro = pro
+
+	if _, err := pro.Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
+
 }
