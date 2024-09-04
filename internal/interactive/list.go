@@ -59,6 +59,7 @@ type model struct {
 	quitting bool
 	stack    []item   // Stack to keep track of node levels
 	path     []string // To keep the current path for display
+	back     bool     // going backwards
 }
 
 func (m model) Init() tea.Cmd {
@@ -78,6 +79,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "enter":
+			m.back = false
 			if len(m.stack) == 0 {
 
 				ti := item{}
@@ -99,9 +101,17 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "backspace", "esc":
 			if len(m.stack) > 0 {
-				m.path = m.path[:len(m.path)-1] // Update path
-				last := m.stack[len(m.stack)-1] // Get last items from stack
-				m.stack = m.stack[:len(m.stack)-1]
+
+				// Remove self from stack
+				var step int = 1
+				if !m.back {
+					step = 2
+				}
+
+				m.path = m.path[:len(m.path)-1]    // Update path
+				last := m.stack[len(m.stack)-step] // Get last items from stack
+				m.stack = m.stack[:len(m.stack)-step]
+				m.back = true
 				m.updateList(last)
 			}
 		}
@@ -117,12 +127,7 @@ func (m model) View() string {
 		return quitTextStyle.Render("Not hungry? That’s cool.")
 	}
 
-	var ll []string
-	for _, k := range m.stack {
-		ll = append(ll, k.Name)
-	}
-
-	header := fmt.Sprintf("\nCurrent Path: %s, Stack: %s\n", strings.Join(m.path, " > "), strings.Join(ll, " > ")) // Display current path
+	header := fmt.Sprintf("\nCurrent Path: %s\n", strings.Join(m.path, " > ")) // Display current path
 	return header + "\n" + m.list.View()
 }
 
