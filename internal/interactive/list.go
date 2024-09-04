@@ -60,6 +60,7 @@ type model struct {
 	stack    []item   // Stack to keep track of node levels
 	path     []string // To keep the current path for display
 	back     bool     // going backwards
+	cursor   int
 }
 
 func (m model) Init() tea.Cmd {
@@ -140,6 +141,7 @@ func (m *model) updateList(i item) {
 	}
 
 	m.list.SetItems(items)
+	m.list.CursorUp()
 }
 
 func RenderList(nl pcollection.NodeList) {
