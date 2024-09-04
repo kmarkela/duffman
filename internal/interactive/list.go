@@ -38,7 +38,7 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	if i.Node != nil {
+	if i.Req == nil {
 		i.Name = fmt.Sprintf("📁 %s", i.Name) // Display folders with an icon
 	}
 
@@ -155,17 +155,16 @@ func (m *model) updateList(i item) {
 	m.list.CursorUp()
 }
 
-func RenderList(nl pcollection.NodeList) {
+func RenderList(sc pcollection.Schema) {
 	items := []list.Item{}
-	fmt.Println(len(nl))
-	for _, k := range nl {
+	for _, k := range sc.Nodes {
 		items = append(items, item(k))
 	}
 
 	const defaultWidth = 20
 
 	l := list.New(items, itemDelegate{}, defaultWidth, listHeight)
-	l.Title = "What do you want for dinner?"
+	l.Title = sc.Name
 	l.SetFilteringEnabled(false)
 	l.Styles.Title = titleStyle
 	l.Styles.PaginationStyle = paginationStyle
