@@ -150,10 +150,13 @@ func (m *model) updateList(i item) {
 		items = append(items, item(k))
 	}
 
-	m.list.SetItems(items)
-	for i := 0; i < m.list.Cursor()+1; i++ {
+	// CursorUp to the first position
+	for i := 0; i < len(m.list.Items())+1; i++ {
 		m.list.CursorUp()
 	}
+
+	m.list.SetItems(items)
+
 }
 
 func RenderList(sc pcollection.Schema) {
