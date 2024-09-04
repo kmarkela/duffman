@@ -54,5 +54,5 @@ func (i *Inter) Run(col *pcollection.Collection) {
 	// printSh(0, col.Schema.Nodes)
 	// }
 
-	RenderList(col.Schema.Nodes)
+	RenderList(col.Schema)
 }

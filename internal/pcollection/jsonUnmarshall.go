@@ -3,6 +3,7 @@ package pcollection
 // The file contains structs to unmarshal Collection and Environment Json files.
 
 type RawCollection struct {
+	Info     Info       `json:"info"`
 	Items    []Item     `json:"item"`
 	Variable []KeyValue `json:"variable,omitempty"`
 }
@@ -52,4 +53,10 @@ type Raw struct {
 
 type Environment struct {
 	Values []KeyValue `json:"values"`
+}
+
+type Info struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Schema      string `json:"schema"`
 }

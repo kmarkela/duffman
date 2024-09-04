@@ -3,7 +3,10 @@ package pcollection
 type NodeList []Node
 
 type Schema struct {
-	Nodes NodeList
+	Nodes       NodeList
+	Name        string
+	Description string
+	Schema      string // postman schema (e.g. https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
 }
 
 type Node struct {
@@ -11,16 +14,3 @@ type Node struct {
 	Node []Node
 	Req  *Req
 }
-
-// func createSchema(rc *RawCollection) (Schema, error) {
-
-// 	var sc Schema = Schema{}
-// 	// var n Node = Node{}
-
-// 	for _, v := range rc.Items {
-
-// 		fmt.Printf("%s - {}: %v", v.Name, v.Item)
-// 	}
-
-// 	return sc, nil
-// }

@@ -70,7 +70,9 @@ func getReqLt(rc *RawCollection) ([]Req, Schema, error) {
 
 	var rlt []Req
 	var sc Schema = Schema{}
-	// var n Node = Node{}
+	sc.Name = rc.Info.Name
+	sc.Description = rc.Info.Description
+	sc.Schema = rc.Info.Schema
 
 	for _, v := range rc.Items {
 
