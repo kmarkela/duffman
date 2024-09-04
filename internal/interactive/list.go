@@ -151,7 +151,7 @@ func (m *model) updateList(i item) {
 	}
 
 	// CursorUp to the first position
-	for i := 0; i < len(m.list.Items())+1; i++ {
+	for m.list.Cursor() > 0 {
 		m.list.CursorUp()
 	}
 
@@ -173,6 +173,7 @@ func RenderList(sc pcollection.Schema) {
 	l.Styles.Title = titleStyle
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
+	l.InfiniteScrolling = true
 
 	m := model{list: l, stack: make([]item, 0), path: []string{"Root"}}
 
