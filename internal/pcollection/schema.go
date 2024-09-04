@@ -8,7 +8,7 @@ type Schema struct {
 
 type Node struct {
 	Name string
-	Node NodeList
+	Node []Node
 	Req  *Req
 }
 

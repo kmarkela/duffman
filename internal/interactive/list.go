@@ -78,12 +78,22 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "enter":
+			if len(m.stack) == 0 {
+
+				ti := item{}
+				for _, k := range m.list.Items() {
+					ti.Node = append(ti.Node, pcollection.Node{Name: k.(item).Name, Node: k.(item).Node, Req: k.(item).Req})
+				}
+
+				m.stack = append(m.stack, ti)
+
+			}
+
 			i, ok := m.list.SelectedItem().(item)
 			if ok && len(i.Node) > 0 { // If selected item has a sublist
 				m.stack = append(m.stack, i)    // Push current items to stack
 				m.path = append(m.path, i.Name) // Update path
-				// fmt.Println("Path:", m.path)
-				m.updateList(i.Node)
+				m.updateList(i)
 			} else if ok {
 				fmt.Println("Selected sublist item:", i.Name)
 				return m, tea.Quit
@@ -91,14 +101,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "backspace", "esc":
 			if len(m.stack) > 0 {
-				// Go back to the previous list
 				m.path = m.path[:len(m.path)-1] // Update path
-				// fmt.Println("Path:", m.path)
 				last := m.stack[len(m.stack)-1] // Get last items from stack
-				// fmt.Println("Selected sublist item:", last.Name)
 				m.stack = m.stack[:len(m.stack)-1]
-				// fmt.Println("Stack:", m.stack)
-				m.updateList(last.Node)
+				m.updateList(last)
 			}
 		}
 	}
@@ -113,15 +119,20 @@ func (m model) View() string {
 		return quitTextStyle.Render("Not hungry? That’s cool.")
 	}
 
-	header := fmt.Sprintf("\nCurrent Path: %s\n", strings.Join(m.path, " > ")) // Display current path
+	var ll []string
+	for _, k := range m.stack {
+		ll = append(ll, k.Name)
+	}
+
+	header := fmt.Sprintf("\nCurrent Path: %s, Stack: %s\n", strings.Join(m.path, " > "), strings.Join(ll, " > ")) // Display current path
 	return header + "\n" + m.list.View()
 }
 
 // Function to update the list model with new items
-func (m *model) updateList(nl pcollection.NodeList) {
+func (m *model) updateList(i item) {
 	items := []list.Item{}
 
-	for _, k := range nl {
+	for _, k := range i.Node {
 		items = append(items, item(k))
 	}
 
@@ -130,7 +141,7 @@ func (m *model) updateList(nl pcollection.NodeList) {
 
 func RenderList(nl pcollection.NodeList) {
 	items := []list.Item{}
-
+	fmt.Println(len(nl))
 	for _, k := range nl {
 		items = append(items, item(k))
 	}
@@ -144,7 +155,8 @@ func RenderList(nl pcollection.NodeList) {
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 
-	m := model{list: l, stack: make([]item, 0), path: []string{"Main List"}}
+	m := model{list: l, stack: make([]item, 0), path: []string{"Root"}}
+	// m := model{list: l, stack: []item{items[0].(item)}, path: []string{"Root"}}
 
 	if _, err := tea.NewProgram(&m).Run(); err != nil {
 		fmt.Println("Error running program:", err)
