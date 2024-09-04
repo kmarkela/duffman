@@ -12,7 +12,7 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-const listHeight = 14
+// const listHeight = 140
 
 var (
 	titleStyle        = lipgloss.NewStyle().MarginLeft(0)
@@ -71,6 +71,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.list.SetWidth(msg.Width)
+		m.list.SetHeight(msg.Height - 10)
 		return m, nil
 
 	case tea.KeyMsg:
@@ -90,6 +91,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			i, ok := m.list.SelectedItem().(item)
+
 			if m.back && len(m.stack) < len(m.path) {
 				m.stack = append(m.stack, m.tstack[len(m.tstack)-2])
 			}
@@ -103,6 +105,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else if ok {
 				fmt.Println("Selected sublist item:", i.Name)
 				return m, tea.Quit
+				// return newTabView(i.Name), nil
+
 			}
 
 		case "backspace", "esc":
@@ -131,14 +135,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if m.quitting {
-		return quitTextStyle.Render("Not hungry? That’s cool.")
+		return quitTextStyle.Render("Exiting...")
 	}
-	// var ll []string
-	// for _, k := range m.stack {
-	// 	ll = append(ll, k.Name)
-	// }
 
-	// header := fmt.Sprintf("\nCurrent Path: %s, Stack: %s\n", strings.Join(m.path, " > "), strings.Join(ll, " > ")) // Display current path
 	header := fmt.Sprintf("\nCurrent Path: %s\n", strings.Join(m.path, " > ")) // Display current path
 	return header + "\n" + m.list.View()
 }
@@ -152,7 +151,9 @@ func (m *model) updateList(i item) {
 	}
 
 	m.list.SetItems(items)
-	m.list.CursorUp()
+	for i := 0; i < m.list.Cursor()+1; i++ {
+		m.list.CursorUp()
+	}
 }
 
 func RenderList(sc pcollection.Schema) {
@@ -163,7 +164,7 @@ func RenderList(sc pcollection.Schema) {
 
 	const defaultWidth = 20
 
-	l := list.New(items, itemDelegate{}, defaultWidth, listHeight)
+	l := list.New(items, itemDelegate{}, defaultWidth, 30)
 	l.Title = sc.Name
 	l.SetFilteringEnabled(false)
 	l.Styles.Title = titleStyle
