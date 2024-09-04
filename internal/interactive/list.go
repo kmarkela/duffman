@@ -133,12 +133,13 @@ func (m model) View() string {
 	if m.quitting {
 		return quitTextStyle.Render("Not hungry? That’s cool.")
 	}
-	var ll []string
-	for _, k := range m.stack {
-		ll = append(ll, k.Name)
-	}
+	// var ll []string
+	// for _, k := range m.stack {
+	// 	ll = append(ll, k.Name)
+	// }
 
-	header := fmt.Sprintf("\nCurrent Path: %s, Stack: %s\n", strings.Join(m.path, " > "), strings.Join(ll, " > ")) // Display current path
+	// header := fmt.Sprintf("\nCurrent Path: %s, Stack: %s\n", strings.Join(m.path, " > "), strings.Join(ll, " > ")) // Display current path
+	header := fmt.Sprintf("\nCurrent Path: %s\n", strings.Join(m.path, " > ")) // Display current path
 	return header + "\n" + m.list.View()
 }
 
