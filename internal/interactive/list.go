@@ -84,9 +84,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				for _, k := range m.list.Items() {
 					ti.Node = append(ti.Node, pcollection.Node{Name: k.(item).Name, Node: k.(item).Node, Req: k.(item).Req})
 				}
-
 				m.stack = append(m.stack, ti)
-
 			}
 
 			i, ok := m.list.SelectedItem().(item)
@@ -156,7 +154,6 @@ func RenderList(nl pcollection.NodeList) {
 	l.Styles.HelpStyle = helpStyle
 
 	m := model{list: l, stack: make([]item, 0), path: []string{"Root"}}
-	// m := model{list: l, stack: []item{items[0].(item)}, path: []string{"Root"}}
 
 	if _, err := tea.NewProgram(&m).Run(); err != nil {
 		fmt.Println("Error running program:", err)
