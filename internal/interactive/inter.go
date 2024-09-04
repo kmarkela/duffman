@@ -1,10 +1,8 @@
 package interactive
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
@@ -35,25 +33,25 @@ func New(proxy string) (Inter, error) {
 
 }
 
-func printSh(tab int, nl pcollection.NodeList) {
-	for _, v := range nl {
+// func printSh(tab int, nl pcollection.NodeList) {
+// 	for _, v := range nl {
 
-		if v.Node == nil {
-			fmt.Printf("%s%s : %s\n", strings.Repeat("-", tab), v.Name, v.Req.URL)
-			continue
-		}
+// 		if v.Node == nil {
+// 			fmt.Printf("%s%s : %s\n", strings.Repeat("-", tab), v.Name, v.Req.URL)
+// 			continue
+// 		}
 
-		fmt.Printf("%s %s\n", strings.Repeat("-", tab), v.Name)
+// 		fmt.Printf("%s %s\n", strings.Repeat("-", tab), v.Name)
 
-		printSh(tab+2, v.Node)
+// 		printSh(tab+2, v.Node)
 
-	}
-}
+// 	}
+// }
 
 func (i *Inter) Run(col *pcollection.Collection) {
 
 	// for _, v := range col.Schema.Nodes {
-	printSh(0, col.Schema.Nodes)
+	// printSh(0, col.Schema.Nodes)
 	// }
 
 	RenderList(col.Schema.Nodes)
