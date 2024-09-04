@@ -58,9 +58,9 @@ type model struct {
 	list     list.Model
 	quitting bool
 	stack    []item   // Stack to keep track of node levels
+	tstack   []item   // temp Stack to keep track of node levels
 	path     []string // To keep the current path for display
 	back     bool     // going backwards
-	cursor   int
 }
 
 func (m model) Init() tea.Cmd {
@@ -80,7 +80,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "enter":
-			m.back = false
 			if len(m.stack) == 0 {
 
 				ti := item{}
@@ -91,7 +90,13 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			i, ok := m.list.SelectedItem().(item)
+			if m.back && len(m.stack) < len(m.path) {
+				m.stack = append(m.stack, m.tstack[len(m.tstack)-2])
+			}
+			m.back = false
 			if ok && len(i.Node) > 0 { // If selected item has a sublist
+
+				m.tstack = m.stack
 				m.stack = append(m.stack, i)    // Push current items to stack
 				m.path = append(m.path, i.Name) // Update path
 				m.updateList(i)
@@ -103,16 +108,17 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "backspace", "esc":
 			if len(m.stack) > 0 {
 
-				// Remove self from stack
-				var step int = 1
-				if !m.back {
-					step = 2
-				}
+				m.tstack = m.stack
 
-				m.path = m.path[:len(m.path)-1]    // Update path
-				last := m.stack[len(m.stack)-step] // Get last items from stack
-				m.stack = m.stack[:len(m.stack)-step]
+				// Remove self from stack
+				if !m.back {
+					m.stack = m.stack[:len(m.stack)-1]
+				}
 				m.back = true
+
+				m.path = m.path[:len(m.path)-1] // Update path
+				last := m.stack[len(m.stack)-1] // Get last items from stack
+				m.stack = m.stack[:len(m.stack)-1]
 				m.updateList(last)
 			}
 		}
@@ -127,8 +133,12 @@ func (m model) View() string {
 	if m.quitting {
 		return quitTextStyle.Render("Not hungry? That’s cool.")
 	}
+	var ll []string
+	for _, k := range m.stack {
+		ll = append(ll, k.Name)
+	}
 
-	header := fmt.Sprintf("\nCurrent Path: %s\n", strings.Join(m.path, " > ")) // Display current path
+	header := fmt.Sprintf("\nCurrent Path: %s, Stack: %s\n", strings.Join(m.path, " > "), strings.Join(ll, " > ")) // Display current path
 	return header + "\n" + m.list.View()
 }
 
