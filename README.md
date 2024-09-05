@@ -10,7 +10,7 @@ DuffMan is a tool written in Go that allows users to parse Postman collections a
 
 ## Install 
 
-There are three ways to install the DuffMan: building from source, using `go get`, or downloading pre-compiled binaries.
+There are three ways to install the DuffMan: building from source, using `go install`, or downloading pre-compiled binaries.
 
 ### Building from Source
 
