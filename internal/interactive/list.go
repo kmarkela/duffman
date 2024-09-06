@@ -103,9 +103,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.path = append(m.path, i.Name) // Update path
 				m.updateList(i)
 			} else if ok {
-				fmt.Println("Selected sublist item:", i.Name)
-				return m, tea.Quit
-				// return newTabView(i.Name), nil
+				return newModel(), nil
 
 			}
 
@@ -168,6 +166,7 @@ func RenderList(sc pcollection.Schema) {
 	const defaultWidth = 20
 
 	l := list.New(items, itemDelegate{}, defaultWidth, 30)
+
 	l.Title = sc.Name
 	l.SetFilteringEnabled(false)
 	l.Styles.Title = titleStyle
@@ -177,7 +176,7 @@ func RenderList(sc pcollection.Schema) {
 
 	m := model{list: l, stack: make([]item, 0), path: []string{"Root"}}
 
-	if _, err := tea.NewProgram(&m).Run(); err != nil {
+	if _, err := tea.NewProgram(&m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}
