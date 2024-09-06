@@ -41,7 +41,7 @@ var (
 )
 
 type keymap = struct {
-	next, prev, quit key.Binding
+	next, prev, send, quit key.Binding
 }
 
 func newTextarea() textarea.Model {
@@ -84,6 +84,10 @@ func newModel() modelEditor {
 			prev: key.NewBinding(
 				key.WithKeys("shift+tab"),
 				key.WithHelp("shift+tab", "prev"),
+			),
+			send: key.NewBinding(
+				key.WithKeys("ctrl+r"),
+				key.WithHelp("ctrl+r", "send Req"),
 			),
 			quit: key.NewBinding(
 				key.WithKeys("esc", "ctrl+c"),
@@ -167,8 +171,10 @@ func (m *modelEditor) sizeInputs() {
 	}
 
 	m.inputs[0].SetHeight(m.height - helpHeight - 1)
-	m.inputs[1].SetHeight((m.height-helpHeight)/2 - 2)
-	m.inputs[2].SetHeight((m.height-helpHeight)/2 - 2)
+
+	h := (m.height - helpHeight) / 3
+	m.inputs[1].SetHeight(h - 2)
+	m.inputs[2].SetHeight(h*2 - 2)
 
 }
 
@@ -177,21 +183,22 @@ func (m modelEditor) View() string {
 	help := m.help.ShortHelpView([]key.Binding{
 		m.keymap.next,
 		m.keymap.prev,
+		m.keymap.send,
 		m.keymap.quit,
 	})
 
 	var views []string
 
 	// Combine title and input view
-	editorView := lipgloss.JoinVertical(lipgloss.Top, editorTitleStyle.Render("Request:"), m.inputs[0].View())
+	editorView := lipgloss.JoinVertical(lipgloss.Top, editorTitleStyle.Render("REQUEST:"), m.inputs[0].View())
 
 	views = append(views, editorView)
 
 	// Combine title and input view
 	editorView = lipgloss.JoinVertical(lipgloss.Top,
-		editorTitleStyle.Render("Variables:"),
+		editorTitleStyle.Render("VARIABLES:"),
 		m.inputs[1].View(),
-		editorTitleStyle.Render("Response:"),
+		editorTitleStyle.Render("RESPONSE:"),
 		m.inputs[2].View())
 	views = append(views, editorView)
 
