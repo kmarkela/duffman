@@ -161,21 +161,16 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *modelEditor) sizeInputs() {
-	// for i := range m.inputs {
-	// 	m.inputs[i].SetWidth(m.width / len(m.inputs))
-	// 	m.inputs[i].SetHeight(m.height - helpHeight)
-	// }
 
 	for i := range m.inputs {
 		m.inputs[i].SetWidth(m.width / 2)
 	}
 
-	m.inputs[0].SetHeight(m.height - helpHeight - 1)
+	h := (m.height - helpHeight) / 4
+	m.inputs[0].SetHeight(h*3 - 2)
+	m.inputs[1].SetHeight(h)
 
-	h := (m.height - helpHeight) / 3
-	m.inputs[1].SetHeight(h - 2)
-	m.inputs[2].SetHeight(h*2 - 2)
-
+	m.inputs[2].SetHeight(m.height - helpHeight - 1)
 }
 
 func (m modelEditor) View() string {
@@ -190,14 +185,16 @@ func (m modelEditor) View() string {
 	var views []string
 
 	// Combine title and input view
-	editorView := lipgloss.JoinVertical(lipgloss.Top, editorTitleStyle.Render("REQUEST:"), m.inputs[0].View())
+	editorView := lipgloss.JoinVertical(lipgloss.Top,
+		editorTitleStyle.Render("REQUEST:"),
+		m.inputs[0].View(),
+		editorTitleStyle.Render("VARIABLES:"),
+		m.inputs[1].View())
 
 	views = append(views, editorView)
 
 	// Combine title and input view
 	editorView = lipgloss.JoinVertical(lipgloss.Top,
-		editorTitleStyle.Render("VARIABLES:"),
-		m.inputs[1].View(),
 		editorTitleStyle.Render("RESPONSE:"),
 		m.inputs[2].View())
 	views = append(views, editorView)
