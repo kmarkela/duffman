@@ -11,9 +11,7 @@ import (
 
 const (
 	initialInputs = 2
-	// maxInputs     = 6
-	// minInputs     = 1
-	helpHeight = 5
+	helpHeight    = 5
 )
 
 var (
@@ -99,7 +97,6 @@ func newModel() modelEditor {
 		m.inputs[i] = newTextarea()
 	}
 	m.inputs[m.focus].Focus()
-	// m.updateKeybindings()
 
 	width, height, _ := term.GetSize(0)
 	m.height = height
@@ -119,8 +116,6 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		// m.height = msg.Height
-		// m.width = msg.Height
 		width, height, _ := term.GetSize(0)
 		m.height = height
 		m.width = width
@@ -160,8 +155,6 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	// m.updateKeybindings()
-
 	// Update all textareas
 	for i := range m.inputs {
 		newModel, cmd := m.inputs[i].Update(msg)
@@ -178,11 +171,6 @@ func (m *modelEditor) sizeInputs() {
 		m.inputs[i].SetHeight(m.height - helpHeight)
 	}
 }
-
-// func (m *modelEditor) updateKeybindings() {
-// 	m.keymap.add.SetEnabled(len(m.inputs) < maxInputs)
-// 	m.keymap.remove.SetEnabled(len(m.inputs) > minInputs)
-// }
 
 func (m modelEditor) View() string {
 
