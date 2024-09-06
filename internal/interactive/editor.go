@@ -10,11 +10,13 @@ import (
 )
 
 const (
-	initialInputs = 2
+	initialInputs = 3
 	helpHeight    = 5
 )
 
 var (
+	editorTitleStyle = lipgloss.NewStyle().MarginLeft(0).Bold(true)
+
 	cursorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("212"))
 
 	cursorLineStyle = lipgloss.NewStyle().
@@ -39,7 +41,7 @@ var (
 )
 
 type keymap = struct {
-	next, prev, add, remove, quit key.Binding
+	next, prev, quit key.Binding
 }
 
 func newTextarea() textarea.Model {
@@ -83,10 +85,6 @@ func newModel() modelEditor {
 				key.WithKeys("shift+tab"),
 				key.WithHelp("shift+tab", "prev"),
 			),
-			// add: key.NewBinding(
-			// 	key.WithKeys("ctrl+n"),
-			// 	key.WithHelp("ctrl+n", "add an editor"),
-			// ),
 			quit: key.NewBinding(
 				key.WithKeys("esc", "ctrl+c"),
 				key.WithHelp("esc", "quit"),
@@ -145,13 +143,6 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			cmd := m.inputs[m.focus].Focus()
 			cmds = append(cmds, cmd)
-		case key.Matches(msg, m.keymap.add):
-			m.inputs = append(m.inputs, newTextarea())
-		case key.Matches(msg, m.keymap.remove):
-			m.inputs = m.inputs[:len(m.inputs)-1]
-			if m.focus > len(m.inputs)-1 {
-				m.focus = len(m.inputs) - 1
-			}
 		}
 	}
 
@@ -166,10 +157,19 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *modelEditor) sizeInputs() {
+	// for i := range m.inputs {
+	// 	m.inputs[i].SetWidth(m.width / len(m.inputs))
+	// 	m.inputs[i].SetHeight(m.height - helpHeight)
+	// }
+
 	for i := range m.inputs {
-		m.inputs[i].SetWidth(m.width / len(m.inputs))
-		m.inputs[i].SetHeight(m.height - helpHeight)
+		m.inputs[i].SetWidth(m.width / 2)
 	}
+
+	m.inputs[0].SetHeight(m.height - helpHeight - 1)
+	m.inputs[1].SetHeight((m.height-helpHeight)/2 - 2)
+	m.inputs[2].SetHeight((m.height-helpHeight)/2 - 2)
+
 }
 
 func (m modelEditor) View() string {
@@ -180,19 +180,20 @@ func (m modelEditor) View() string {
 		m.keymap.quit,
 	})
 
-	titles := []string{"Req", "Var"}
-
 	var views []string
-	for i := range m.inputs {
 
-		// Create the title view
-		titleView := titleStyle.Render(titles[i])
-		// Combine title and input view
-		editorView := lipgloss.JoinVertical(lipgloss.Top, titleView, m.inputs[i].View())
+	// Combine title and input view
+	editorView := lipgloss.JoinVertical(lipgloss.Top, editorTitleStyle.Render("Request:"), m.inputs[0].View())
 
-		views = append(views, editorView)
-		// views = append(views, m.inputs[i].View())
-	}
+	views = append(views, editorView)
+
+	// Combine title and input view
+	editorView = lipgloss.JoinVertical(lipgloss.Top,
+		editorTitleStyle.Render("Variables:"),
+		m.inputs[1].View(),
+		editorTitleStyle.Render("Response:"),
+		m.inputs[2].View())
+	views = append(views, editorView)
 
 	return lipgloss.JoinHorizontal(lipgloss.Top, views...) + "\n\n" + help
 }
