@@ -46,8 +46,7 @@ type keymap = struct {
 
 func newTextarea() textarea.Model {
 	t := textarea.New()
-	t.Placeholder = "Type something"
-	t.ShowLineNumbers = true
+	t.ShowLineNumbers = false
 	t.Cursor.Style = cursorStyle
 	t.FocusedStyle.Placeholder = focusedPlaceholderStyle
 	t.BlurredStyle.Placeholder = placeholderStyle
@@ -70,9 +69,10 @@ type modelEditor struct {
 	help   help.Model
 	inputs []textarea.Model
 	focus  int
+	item   item
 }
 
-func newModel() modelEditor {
+func newModel(i item) modelEditor {
 	m := modelEditor{
 		inputs: make([]textarea.Model, initialInputs),
 		help:   help.New(),
@@ -99,6 +99,8 @@ func newModel() modelEditor {
 		m.inputs[i] = newTextarea()
 	}
 	m.inputs[m.focus].Focus()
+
+	m.inputs[0].SetValue("URL: " + i.Req.URL)
 
 	width, height, _ := term.GetSize(0)
 	m.height = height

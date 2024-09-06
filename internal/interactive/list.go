@@ -57,10 +57,11 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 type model struct {
 	list     list.Model
 	quitting bool
-	stack    []item   // Stack to keep track of node levels
-	tstack   []item   // temp Stack to keep track of node levels
-	path     []string // To keep the current path for display
-	back     bool     // going backwards
+	stack    []item                  // Stack to keep track of node levels
+	tstack   []item                  // temp Stack to keep track of node levels
+	path     []string                // To keep the current path for display
+	back     bool                    // going backwards
+	col      *pcollection.Collection // TODO: DO I need whole collection here?
 }
 
 func (m model) Init() tea.Cmd {
@@ -103,7 +104,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.path = append(m.path, i.Name) // Update path
 				m.updateList(i)
 			} else if ok {
-				return newModel(), nil
+				return newModel(i), nil
 
 			}
 
@@ -157,9 +158,9 @@ func (m *model) updateList(i item) {
 
 }
 
-func RenderList(sc pcollection.Schema) {
+func RenderList(c *pcollection.Collection) {
 	items := []list.Item{}
-	for _, k := range sc.Nodes {
+	for _, k := range c.Schema.Nodes {
 		items = append(items, item(k))
 	}
 
@@ -167,14 +168,14 @@ func RenderList(sc pcollection.Schema) {
 
 	l := list.New(items, itemDelegate{}, defaultWidth, 30)
 
-	l.Title = sc.Name
+	l.Title = c.Schema.Name
 	l.SetFilteringEnabled(false)
 	l.Styles.Title = titleStyle
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 	l.InfiniteScrolling = true
 
-	m := model{list: l, stack: make([]item, 0), path: []string{"Root"}}
+	m := model{list: l, stack: make([]item, 0), path: []string{"Root"}, col: c}
 
 	if _, err := tea.NewProgram(&m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
