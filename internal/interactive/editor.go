@@ -100,7 +100,7 @@ func newModel(i item) modelEditor {
 	}
 	m.inputs[m.focus].Focus()
 
-	m.inputs[0].SetValue("URL: " + i.Req.URL)
+	m.inputs[0].SetValue(buildString(*i.Req))
 
 	width, height, _ := term.GetSize(0)
 	m.height = height
