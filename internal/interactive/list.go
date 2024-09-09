@@ -63,7 +63,6 @@ type model struct {
 	path     []string                // To keep the current path for display
 	back     bool                    // going backwards
 	col      *pcollection.Collection // TODO: DO I need whole collection here?
-	KeyMap   keymapList
 }
 
 func (m model) Init() tea.Cmd {
@@ -99,16 +98,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.stack = append(m.stack, m.tstack[len(m.tstack)-2])
 			}
 			m.back = false
-			// if ok && len(i.Node) > 0 { // If selected item has a sublist
-
-			// 	m.tstack = m.stack
-			// 	m.stack = append(m.stack, i)    // Push current items to stack
-			// 	m.path = append(m.path, i.Name) // Update path
-			// 	m.updateList(i)
-			// } else if ok {
-			// 	return newModel(i, m), nil
-
-			// }
 
 			if ok && i.Req == nil { // If selected item has a sublist
 
@@ -117,7 +106,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.path = append(m.path, i.Name) // Update path
 				m.updateList(i)
 			} else if ok {
-				// fmt.Println(i.Req)
 				return newModel(i, m), nil
 			}
 
@@ -171,11 +159,7 @@ func (m *model) updateList(i item) {
 
 }
 
-type keymapList struct {
-	up, down, back, quit key.Binding
-}
-
-func AdditionalShortHelpKeys() []key.Binding {
+func additionalShortHelpKeys() []key.Binding {
 	var kbl []key.Binding
 
 	kbl = append(kbl, key.NewBinding(
@@ -201,15 +185,13 @@ func RenderList(c *pcollection.Collection) {
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 	l.InfiniteScrolling = true
-	l.AdditionalShortHelpKeys = AdditionalShortHelpKeys
+	l.AdditionalShortHelpKeys = additionalShortHelpKeys
 
 	m := model{
 		list:  l,
 		col:   c,
 		stack: make([]item, 0),
 		path:  []string{"Root"}}
-	// m.KeyMap = m.keymap
-	// m.AdditionalShortHelpKeys =
 
 	if _, err := tea.NewProgram(&m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
