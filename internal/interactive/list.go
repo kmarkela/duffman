@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -62,6 +63,7 @@ type model struct {
 	path     []string                // To keep the current path for display
 	back     bool                    // going backwards
 	col      *pcollection.Collection // TODO: DO I need whole collection here?
+	KeyMap   keymapList
 }
 
 func (m model) Init() tea.Cmd {
@@ -169,6 +171,20 @@ func (m *model) updateList(i item) {
 
 }
 
+type keymapList struct {
+	up, down, back, quit key.Binding
+}
+
+func AdditionalShortHelpKeys() []key.Binding {
+	var kbl []key.Binding
+
+	kbl = append(kbl, key.NewBinding(
+		key.WithKeys("backspace"),
+		key.WithHelp("backspace", "back"),
+	))
+	return kbl
+}
+
 func RenderList(c *pcollection.Collection) {
 	items := []list.Item{}
 	for _, k := range c.Schema.Nodes {
@@ -185,8 +201,15 @@ func RenderList(c *pcollection.Collection) {
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 	l.InfiniteScrolling = true
+	l.AdditionalShortHelpKeys = AdditionalShortHelpKeys
 
-	m := model{list: l, stack: make([]item, 0), path: []string{"Root"}, col: c}
+	m := model{
+		list:  l,
+		col:   c,
+		stack: make([]item, 0),
+		path:  []string{"Root"}}
+	// m.KeyMap = m.keymap
+	// m.AdditionalShortHelpKeys =
 
 	if _, err := tea.NewProgram(&m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)

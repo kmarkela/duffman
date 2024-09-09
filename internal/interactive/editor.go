@@ -40,7 +40,7 @@ var (
 				Border(lipgloss.HiddenBorder())
 )
 
-type keymap = struct {
+type keymap struct {
 	next, send, back, quit key.Binding
 }
 
@@ -82,10 +82,6 @@ func newModel(i item, ml *model) modelEditor {
 				key.WithKeys("tab"),
 				key.WithHelp("tab", "next"),
 			),
-			// prev: key.NewBinding(
-			// 	key.WithKeys("ctrl+b"),
-			// 	key.WithHelp("ctrl+b", "prev"),
-			// ),
 			send: key.NewBinding(
 				key.WithKeys("ctrl+r"),
 				key.WithHelp("ctrl+r", "send Req"),
@@ -148,14 +144,6 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			cmd := m.inputs[m.focus].Focus()
 			cmds = append(cmds, cmd)
-			// case key.Matches(msg, m.keymap.prev):
-			// 	m.inputs[m.focus].Blur()
-			// 	m.focus--
-			// 	if m.focus < 0 {
-			// 		m.focus = len(m.inputs) - 1
-			// 	}
-			// 	cmd := m.inputs[m.focus].Focus()
-			// 	cmds = append(cmds, cmd)
 		}
 	}
 
