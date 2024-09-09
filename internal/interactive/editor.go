@@ -41,7 +41,7 @@ var (
 )
 
 type keymap = struct {
-	next, prev, send, quit key.Binding
+	next, send, back, quit key.Binding
 }
 
 func newTextarea() textarea.Model {
@@ -69,25 +69,30 @@ type modelEditor struct {
 	help   help.Model
 	inputs []textarea.Model
 	focus  int
-	item   item
+	ml     *model
 }
 
-func newModel(i item) modelEditor {
-	m := modelEditor{
+func newModel(i item, ml *model) modelEditor {
+	me := modelEditor{
 		inputs: make([]textarea.Model, initialInputs),
 		help:   help.New(),
+		ml:     ml,
 		keymap: keymap{
 			next: key.NewBinding(
 				key.WithKeys("tab"),
 				key.WithHelp("tab", "next"),
 			),
-			prev: key.NewBinding(
-				key.WithKeys("shift+tab"),
-				key.WithHelp("shift+tab", "prev"),
-			),
+			// prev: key.NewBinding(
+			// 	key.WithKeys("ctrl+b"),
+			// 	key.WithHelp("ctrl+b", "prev"),
+			// ),
 			send: key.NewBinding(
 				key.WithKeys("ctrl+r"),
 				key.WithHelp("ctrl+r", "send Req"),
+			),
+			back: key.NewBinding(
+				key.WithKeys("ctrl+l"),
+				key.WithHelp("ctrl+l", "back"),
 			),
 			quit: key.NewBinding(
 				key.WithKeys("esc", "ctrl+c"),
@@ -96,18 +101,18 @@ func newModel(i item) modelEditor {
 		},
 	}
 	for i := 0; i < initialInputs; i++ {
-		m.inputs[i] = newTextarea()
+		me.inputs[i] = newTextarea()
 	}
-	m.inputs[m.focus].Focus()
+	me.inputs[me.focus].Focus()
 
-	m.inputs[0].SetValue(buildString(*i.Req))
+	me.inputs[0].SetValue(buildString(*i.Req))
 
 	width, height, _ := term.GetSize(0)
-	m.height = height
-	m.width = width
-	m.sizeInputs()
+	me.height = height
+	me.width = width
+	me.sizeInputs()
 
-	return m
+	return me
 }
 
 func (m modelEditor) Init() tea.Cmd {
@@ -133,6 +138,8 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.inputs[i].Blur()
 			}
 			return m, tea.Quit
+		case key.Matches(msg, m.keymap.back):
+			return m.ml, nil
 		case key.Matches(msg, m.keymap.next):
 			m.inputs[m.focus].Blur()
 			m.focus++
@@ -141,14 +148,14 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			cmd := m.inputs[m.focus].Focus()
 			cmds = append(cmds, cmd)
-		case key.Matches(msg, m.keymap.prev):
-			m.inputs[m.focus].Blur()
-			m.focus--
-			if m.focus < 0 {
-				m.focus = len(m.inputs) - 1
-			}
-			cmd := m.inputs[m.focus].Focus()
-			cmds = append(cmds, cmd)
+			// case key.Matches(msg, m.keymap.prev):
+			// 	m.inputs[m.focus].Blur()
+			// 	m.focus--
+			// 	if m.focus < 0 {
+			// 		m.focus = len(m.inputs) - 1
+			// 	}
+			// 	cmd := m.inputs[m.focus].Focus()
+			// 	cmds = append(cmds, cmd)
 		}
 	}
 
@@ -179,8 +186,9 @@ func (m modelEditor) View() string {
 
 	help := m.help.ShortHelpView([]key.Binding{
 		m.keymap.next,
-		m.keymap.prev,
+		// m.keymap.prev,
 		m.keymap.send,
+		m.keymap.back,
 		m.keymap.quit,
 	})
 
