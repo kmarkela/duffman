@@ -104,7 +104,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.path = append(m.path, i.Name) // Update path
 				m.updateList(i)
 			} else if ok {
-				return newModel(i), nil
+				return newModel(i, m), nil
 
 			}
 

@@ -7,7 +7,7 @@ import (
 )
 
 func buildString(r pcollection.Req) string {
-	out := fmt.Sprintf("Method:: %s\n", r.URL)
+	out := fmt.Sprintf("Method:: %s\n", r.Method)
 	out += fmt.Sprintf("URL:: %s\n", r.URL)
 	if len(r.Headers) > 0 {
 		out += "HEADERS:: "
