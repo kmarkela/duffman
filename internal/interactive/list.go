@@ -97,15 +97,26 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.stack = append(m.stack, m.tstack[len(m.tstack)-2])
 			}
 			m.back = false
-			if ok && len(i.Node) > 0 { // If selected item has a sublist
+			// if ok && len(i.Node) > 0 { // If selected item has a sublist
+
+			// 	m.tstack = m.stack
+			// 	m.stack = append(m.stack, i)    // Push current items to stack
+			// 	m.path = append(m.path, i.Name) // Update path
+			// 	m.updateList(i)
+			// } else if ok {
+			// 	return newModel(i, m), nil
+
+			// }
+
+			if ok && i.Req == nil { // If selected item has a sublist
 
 				m.tstack = m.stack
 				m.stack = append(m.stack, i)    // Push current items to stack
 				m.path = append(m.path, i.Name) // Update path
 				m.updateList(i)
 			} else if ok {
+				// fmt.Println(i.Req)
 				return newModel(i, m), nil
-
 			}
 
 		case "backspace", "esc":
