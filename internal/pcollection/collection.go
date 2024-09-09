@@ -18,7 +18,7 @@ type Req struct {
 }
 
 type Parameters struct {
-	Get  map[string]string `json:"Get,omitempty"`
-	Post map[string]string `json:"Post,omitempty"`
-	Path map[string]string `json:"Path,omitempty"`
+	Get  map[string]string
+	Post map[string]string
+	Path map[string]string
 }
