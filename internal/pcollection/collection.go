@@ -9,16 +9,16 @@ type Collection struct {
 }
 
 type Req struct {
-	Method      string
-	URL         string
-	Headers     map[string]string
-	Body        string
-	ContentType string
-	Parameters  Parameters
+	Method      string            `json:"Method,omitempty"`
+	URL         string            `json:"URL,omitempty"`
+	Headers     map[string]string `json:"Headers,omitempty"`
+	Body        string            `json:"Body,omitempty"`
+	ContentType string            `json:"ContentType,omitempty"`
+	Parameters  Parameters        `json:"-"`
 }
 
 type Parameters struct {
-	Get  map[string]string
-	Post map[string]string
-	Path map[string]string
+	Get  map[string]string `json:"Get,omitempty"`
+	Post map[string]string `json:"Post,omitempty"`
+	Path map[string]string `json:"Path,omitempty"`
 }
