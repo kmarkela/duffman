@@ -4,30 +4,27 @@ import (
 	"encoding/json"
 	"log"
 
+	// "log"
+
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-// func buildString(r pcollection.Req) string {
-// 	out := fmt.Sprintf("Method:: %s\n", r.Method)
-// 	out += fmt.Sprintf("URL:: %s\n", r.URL)
-// 	if len(r.Headers) > 0 {
-// 		out += "HEADERS:: "
-
-// 		for k, v := range r.Headers {
-// 			out += fmt.Sprintf("%s: %s\n", k, v)
-// 		}
-// 	}
-
-// 	return out
-
-// }
-
-func buildString(r pcollection.Req) string {
-	// r.Parameters = nil
+func buildReqStr(r pcollection.Req) string {
 	marshaled, err := json.MarshalIndent(r, "", "   ")
 	if err != nil {
 		log.Fatalf("marshaling error: %s", err)
 	}
+	return string(marshaled)
+
+}
+
+func buildVarStr(col pcollection.Collection) string {
+
+	marshaled, err := json.MarshalIndent(col, "", "   ")
+	if err != nil {
+		log.Fatalf("marshaling error: %s", err)
+	}
+	// logger.Logger.Info(string(marshaled))
 	return string(marshaled)
 
 }
