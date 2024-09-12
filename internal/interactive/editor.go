@@ -7,6 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/term"
+	"github.com/kmarkela/duffman/internal/logger"
 )
 
 const (
@@ -101,7 +102,13 @@ func newModel(i item, ml *model) modelEditor {
 	}
 	me.inputs[me.focus].Focus()
 
-	me.inputs[0].SetValue(buildString(*i.Req))
+	me.inputs[0].SetValue(buildReqStr(*i.Req))
+
+	v := buildVarStr(*ml.col)
+
+	logger.Logger.Info(v)
+
+	me.inputs[1].SetValue(buildVarStr(*ml.col))
 
 	width, height, _ := term.GetSize(0)
 	me.height = height
