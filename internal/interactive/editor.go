@@ -1,13 +1,14 @@
 package interactive
 
 import (
+	"strings"
+
 	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textarea"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/term"
-	"github.com/kmarkela/duffman/internal/logger"
 )
 
 const (
@@ -47,7 +48,7 @@ type keymap struct {
 
 func newTextarea() textarea.Model {
 	t := textarea.New()
-	t.ShowLineNumbers = false
+	t.ShowLineNumbers = true
 	t.Cursor.Style = cursorStyle
 	t.FocusedStyle.Placeholder = focusedPlaceholderStyle
 	t.BlurredStyle.Placeholder = placeholderStyle
@@ -102,13 +103,15 @@ func newModel(i item, ml *model) modelEditor {
 	}
 	me.inputs[me.focus].Focus()
 
-	me.inputs[0].SetValue(buildReqStr(*i.Req))
+	req := buildReqStr(*i.Req)
+	me.inputs[0].CharLimit = len(req)
+	me.inputs[0].MaxHeight = len(strings.Split(req, "\n"))
+	me.inputs[0].SetValue(req)
 
-	v := buildVarStr(*ml.col)
-
-	logger.Logger.Info(v)
-
-	me.inputs[1].SetValue(buildVarStr(*ml.col))
+	vars := buildVarStr(*ml.col)
+	me.inputs[1].CharLimit = len(vars)
+	me.inputs[1].MaxHeight = len(strings.Split(vars, "\n"))
+	me.inputs[1].SetValue(vars)
 
 	width, height, _ := term.GetSize(0)
 	me.height = height
