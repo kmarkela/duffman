@@ -103,6 +103,11 @@ func newModel(i item, ml *model) modelEditor {
 	}
 	me.inputs[me.focus].Focus()
 
+	width, height, _ := term.GetSize(0)
+	me.height = height
+	me.width = width
+	me.sizeInputs()
+
 	req := buildReqStr(*i.Req)
 	me.inputs[0].CharLimit = len(req)
 	me.inputs[0].MaxHeight = len(strings.Split(req, "\n"))
@@ -112,11 +117,6 @@ func newModel(i item, ml *model) modelEditor {
 	me.inputs[1].CharLimit = len(vars)
 	me.inputs[1].MaxHeight = len(strings.Split(vars, "\n"))
 	me.inputs[1].SetValue(vars)
-
-	width, height, _ := term.GetSize(0)
-	me.height = height
-	me.width = width
-	me.sizeInputs()
 
 	return me
 }
