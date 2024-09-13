@@ -1,6 +1,7 @@
 package interactive
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -9,7 +10,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/term"
-	"github.com/kmarkela/duffman/internal/logger"
 )
 
 const (
@@ -44,7 +44,7 @@ var (
 )
 
 type keymap struct {
-	next, send, back, quit key.Binding
+	next, send, back, save, quit key.Binding
 }
 
 func newTextarea() textarea.Model {
@@ -73,6 +73,7 @@ type modelEditor struct {
 	inputs []textarea.Model
 	focus  int
 	ml     *model
+	item   item
 }
 
 func newModel(i item, ml *model) modelEditor {
@@ -80,6 +81,7 @@ func newModel(i item, ml *model) modelEditor {
 		inputs: make([]textarea.Model, initialInputs),
 		help:   help.New(),
 		ml:     ml,
+		item:   i,
 		keymap: keymap{
 			next: key.NewBinding(
 				key.WithKeys("tab"),
@@ -92,6 +94,10 @@ func newModel(i item, ml *model) modelEditor {
 			back: key.NewBinding(
 				key.WithKeys("ctrl+l"),
 				key.WithHelp("ctrl+l", "back"),
+			),
+			save: key.NewBinding(
+				key.WithKeys("ctrl+s"),
+				key.WithHelp("ctrl+s", "save vars"),
 			),
 			quit: key.NewBinding(
 				key.WithKeys("esc", "ctrl+c"),
@@ -112,7 +118,6 @@ func newModel(i item, ml *model) modelEditor {
 	req := buildReqStr(*i.Req, ml.col.Env, ml.col.Variables)
 	me.inputs[0].CharLimit = len(req)
 	me.inputs[0].MaxHeight = len(strings.Split(req, "\n"))
-	logger.Logger.Info(req)
 	me.inputs[0].SetValue(req)
 
 	vars := buildVarStr(*ml.col)
@@ -148,6 +153,13 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case key.Matches(msg, m.keymap.back):
 			return m.ml, nil
+		case key.Matches(msg, m.keymap.save):
+			value := m.inputs[1].Value()
+			var vo varOut
+			// TODO: error headler
+			json.Unmarshal([]byte(value), &vo)
+			req := buildReqStr(*m.item.Req, vo.Env, vo.Variables)
+			m.inputs[0].SetValue(req)
 		case key.Matches(msg, m.keymap.next):
 			m.inputs[m.focus].Blur()
 			m.focus++
@@ -186,7 +198,7 @@ func (m modelEditor) View() string {
 
 	help := m.help.ShortHelpView([]key.Binding{
 		m.keymap.next,
-		// m.keymap.prev,
+		m.keymap.save,
 		m.keymap.send,
 		m.keymap.back,
 		m.keymap.quit,

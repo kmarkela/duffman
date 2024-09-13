@@ -50,3 +50,42 @@ func ResolveVars(env, vars []pcollection.KeyValue, req *pcollection.Req) {
 
 	}
 }
+
+// Deep copy function for Req struct
+func DeepCopyReq(original *pcollection.Req) *pcollection.Req {
+	if original == nil {
+		return nil
+	}
+
+	// Create a new Req object
+	copy := &pcollection.Req{
+		Method:      original.Method,
+		URL:         original.URL,
+		Headers:     make(map[string]string),
+		Body:        original.Body,
+		ContentType: original.ContentType,
+		Parameters: pcollection.Parameters{
+			Get:  make(map[string]string),
+			Post: make(map[string]string),
+			Path: make(map[string]string),
+		},
+	}
+
+	// Copy map values for Headers
+	for k, v := range original.Headers {
+		copy.Headers[k] = v
+	}
+
+	// Copy map values for Parameters
+	for k, v := range original.Parameters.Get {
+		copy.Parameters.Get[k] = v
+	}
+	for k, v := range original.Parameters.Post {
+		copy.Parameters.Post[k] = v
+	}
+	for k, v := range original.Parameters.Path {
+		copy.Parameters.Path[k] = v
+	}
+
+	return copy
+}
