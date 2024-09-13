@@ -81,6 +81,7 @@ func startWorker(wg *sync.WaitGroup, wq <-chan workUnit, wr chan<- output.Result
 	wg.Done()
 }
 
+// TODO: req.createEndpoint
 func createEndpoint(url string, getParam map[string]string, pathParam map[string]string) string {
 
 	for k, v := range pathParam {
