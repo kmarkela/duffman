@@ -1,9 +1,12 @@
 package interactive
 
 import (
+	"bytes"
 	"encoding/json"
 
+	"github.com/kmarkela/duffman/internal/logger"
 	"github.com/kmarkela/duffman/internal/pcollection"
+	"github.com/kmarkela/duffman/internal/req"
 )
 
 type varOut struct {
@@ -11,12 +14,21 @@ type varOut struct {
 	Env       []pcollection.KeyValue `json:"Enviroment,omitempty"`
 }
 
-func buildReqStr(r pcollection.Req) string {
-	marshaled, err := json.MarshalIndent(r, "", "   ")
-	if err != nil {
+func buildReqStr(r pcollection.Req, env, vars []pcollection.KeyValue) string {
+	req.ResolveVars(env, vars, &r)
+	r.URL = req.CreateEndpoint(r.URL, r.Parameters.Get, r.Parameters.Path)
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	encoder.SetIndent("", "   ")
+
+	if err := encoder.Encode(r); err != nil {
 		return err.Error()
 	}
-	return string(marshaled)
+
+	logger.Logger.Info(buf.String())
+
+	return buf.String()
 
 }
 

@@ -9,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/term"
+	"github.com/kmarkela/duffman/internal/logger"
 )
 
 const (
@@ -108,9 +109,10 @@ func newModel(i item, ml *model) modelEditor {
 	me.width = width
 	me.sizeInputs()
 
-	req := buildReqStr(*i.Req)
+	req := buildReqStr(*i.Req, ml.col.Env, ml.col.Variables)
 	me.inputs[0].CharLimit = len(req)
 	me.inputs[0].MaxHeight = len(strings.Split(req, "\n"))
+	logger.Logger.Info(req)
 	me.inputs[0].SetValue(req)
 
 	vars := buildVarStr(*ml.col)
