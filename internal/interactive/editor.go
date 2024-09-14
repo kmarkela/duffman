@@ -2,6 +2,7 @@ package interactive
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -49,7 +50,7 @@ type keymap struct {
 
 func newTextarea() textarea.Model {
 	t := textarea.New()
-	t.ShowLineNumbers = true
+	t.ShowLineNumbers = false
 	t.Cursor.Style = cursorStyle
 	t.FocusedStyle.Placeholder = focusedPlaceholderStyle
 	t.BlurredStyle.Placeholder = placeholderStyle
@@ -154,10 +155,13 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keymap.back):
 			return m.ml, nil
 		case key.Matches(msg, m.keymap.save):
-			value := m.inputs[1].Value()
 			var vo varOut
-			// TODO: error headler
-			json.Unmarshal([]byte(value), &vo)
+
+			if err := json.Unmarshal([]byte(m.inputs[1].Value()), &vo); err != nil {
+				m.inputs[0].SetValue(fmt.Sprintf("\nError of parsing VARIABLES. Error Msg: %s", err.Error()))
+				break
+			}
+
 			req := buildReqStr(*m.item.Req, vo.Env, vo.Variables)
 			m.inputs[0].SetValue(req)
 		case key.Matches(msg, m.keymap.next):
@@ -168,6 +172,9 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			cmd := m.inputs[m.focus].Focus()
 			cmds = append(cmds, cmd)
+
+		case key.Matches(msg, m.keymap.send):
+
 		}
 	}
 

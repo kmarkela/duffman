@@ -2,7 +2,10 @@ package req
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"strings"
+	"time"
 
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
@@ -88,4 +91,33 @@ func DeepCopyReq(original *pcollection.Req) *pcollection.Req {
 	}
 
 	return copy
+}
+
+func DoRequest(endpoint string, body io.Reader, r pcollection.Req, tr *http.Transport) (int, int64, time.Duration, error) {
+
+	req, err := http.NewRequest(r.Method, endpoint, body)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+
+	for k, v := range r.Headers {
+		req.Header.Set(k, v)
+	}
+
+	if r.ContentType != "" {
+		req.Header.Set("Content-Type", r.ContentType)
+	}
+
+	client := &http.Client{Transport: tr}
+
+	start := time.Now()
+
+	res, err := client.Do(req)
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	defer res.Body.Close()
+
+	return res.StatusCode, res.ContentLength, time.Duration(time.Since(start).Truncate(time.Millisecond)), nil
+
 }
