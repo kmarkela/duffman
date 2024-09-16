@@ -3,6 +3,7 @@ package interactive
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -11,6 +12,9 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/term"
+	"github.com/kmarkela/duffman/internal/logger"
+	"github.com/kmarkela/duffman/internal/pcollection"
+	"github.com/kmarkela/duffman/internal/req"
 )
 
 const (
@@ -174,6 +178,39 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, cmd)
 
 		case key.Matches(msg, m.keymap.send):
+			logger.Logger.Info("Send...")
+			var ro pcollection.Req
+
+			if err := json.Unmarshal([]byte(m.inputs[0].Value()), &ro); err != nil {
+				m.inputs[0].SetValue(fmt.Sprintf("\nError of parsing REQUEST. Error Msg: %s", err.Error()))
+				break
+			}
+			logger.Logger.Info("Json parsed", "url", ro.URL)
+
+			res, err := req.DoRequestFull(ro.URL, nil, ro, m.ml.tr)
+			if err != nil {
+				m.inputs[2].SetValue(fmt.Sprintf("\nError executing request. Error Msg: %s", err.Error()))
+				break
+			}
+			var header string = res.Status
+			for k, v := range res.Header {
+				header = fmt.Sprintf("%s\n%s: %s", header, k, strings.Join(v, ";"))
+			}
+
+			bodyBytes, err := io.ReadAll(res.Body)
+			if err != nil {
+				m.inputs[2].SetValue(fmt.Sprintf("\nError executing request. Error Msg: %s", err.Error()))
+			}
+
+			m.inputs[2].CharLimit = len(string(bodyBytes)) + len(header) + 2
+			m.inputs[2].MaxHeight = len(strings.Split(string(bodyBytes), "\n")) + len(res.Header) + 1
+
+			m.inputs[2].SetValue(fmt.Sprintf("%s\n\n%s", header, string(bodyBytes)))
+
+			res.Body.Close()
+			logger.Logger.Info("Len", "l", len(strings.Split(string(bodyBytes), "\n")))
+
+			logger.Logger.Info(string(bodyBytes))
 
 		}
 	}
