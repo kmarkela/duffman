@@ -12,7 +12,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/term"
-	"github.com/kmarkela/duffman/internal/logger"
 	"github.com/kmarkela/duffman/internal/pcollection"
 	"github.com/kmarkela/duffman/internal/req"
 )
@@ -121,12 +120,12 @@ func newModel(i item, ml *model) modelEditor {
 	me.sizeInputs()
 
 	req := buildReqStr(*i.Req, ml.col.Env, ml.col.Variables)
-	me.inputs[0].CharLimit = len(req)
+	me.inputs[0].CharLimit = 2 * len(req)
 	me.inputs[0].MaxHeight = len(strings.Split(req, "\n"))
 	me.inputs[0].SetValue(req)
 
 	vars := buildVarStr(*ml.col)
-	me.inputs[1].CharLimit = len(vars)
+	me.inputs[1].CharLimit = 2 * len(vars)
 	me.inputs[1].MaxHeight = len(strings.Split(vars, "\n"))
 	me.inputs[1].SetValue(vars)
 
@@ -168,6 +167,10 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			req := buildReqStr(*m.item.Req, vo.Env, vo.Variables)
 			m.inputs[0].SetValue(req)
+
+			// save vars
+			m.ml.col.Env = vo.Env
+			m.ml.col.Variables = vo.Variables
 		case key.Matches(msg, m.keymap.next):
 			m.inputs[m.focus].Blur()
 			m.focus++
@@ -178,14 +181,12 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, cmd)
 
 		case key.Matches(msg, m.keymap.send):
-			logger.Logger.Info("Send...")
 			var ro pcollection.Req
 
 			if err := json.Unmarshal([]byte(m.inputs[0].Value()), &ro); err != nil {
 				m.inputs[0].SetValue(fmt.Sprintf("\nError of parsing REQUEST. Error Msg: %s", err.Error()))
 				break
 			}
-			logger.Logger.Info("Json parsed", "url", ro.URL)
 
 			res, err := req.DoRequestFull(ro.URL, nil, ro, m.ml.tr)
 			if err != nil {
@@ -201,16 +202,12 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if err != nil {
 				m.inputs[2].SetValue(fmt.Sprintf("\nError executing request. Error Msg: %s", err.Error()))
 			}
+			res.Body.Close()
 
 			m.inputs[2].CharLimit = len(string(bodyBytes)) + len(header) + 2
 			m.inputs[2].MaxHeight = len(strings.Split(string(bodyBytes), "\n")) + len(res.Header) + 1
 
 			m.inputs[2].SetValue(fmt.Sprintf("%s\n\n%s", header, string(bodyBytes)))
-
-			res.Body.Close()
-			logger.Logger.Info("Len", "l", len(strings.Split(string(bodyBytes), "\n")))
-
-			logger.Logger.Info(string(bodyBytes))
 
 		}
 	}
