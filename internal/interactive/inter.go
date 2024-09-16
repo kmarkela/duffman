@@ -33,26 +33,6 @@ func New(proxy string) (Inter, error) {
 
 }
 
-// func printSh(tab int, nl pcollection.NodeList) {
-// 	for _, v := range nl {
-
-// 		if v.Node == nil {
-// 			fmt.Printf("%s%s : %s\n", strings.Repeat("-", tab), v.Name, v.Req.URL)
-// 			continue
-// 		}
-
-// 		fmt.Printf("%s %s\n", strings.Repeat("-", tab), v.Name)
-
-// 		printSh(tab+2, v.Node)
-
-// 	}
-// }
-
 func (i *Inter) Run(col *pcollection.Collection) {
-
-	// for _, v := range col.Schema.Nodes {
-	// printSh(0, col.Schema.Nodes)
-	// }
-
-	RenderList(col)
+	i.RenderList(col)
 }

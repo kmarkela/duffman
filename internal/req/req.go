@@ -95,9 +95,23 @@ func DeepCopyReq(original *pcollection.Req) *pcollection.Req {
 
 func DoRequest(endpoint string, body io.Reader, r pcollection.Req, tr *http.Transport) (int, int64, time.Duration, error) {
 
-	req, err := http.NewRequest(r.Method, endpoint, body)
+	start := time.Now()
+
+	res, err := DoRequestFull(endpoint, body, r, tr)
 	if err != nil {
 		return 0, 0, 0, err
+	}
+	defer res.Body.Close()
+
+	return res.StatusCode, res.ContentLength, time.Duration(time.Since(start).Truncate(time.Millisecond)), nil
+
+}
+
+func DoRequestFull(endpoint string, body io.Reader, r pcollection.Req, tr *http.Transport) (*http.Response, error) {
+
+	req, err := http.NewRequest(r.Method, endpoint, body)
+	if err != nil {
+		return nil, err
 	}
 
 	for k, v := range r.Headers {
@@ -110,14 +124,11 @@ func DoRequest(endpoint string, body io.Reader, r pcollection.Req, tr *http.Tran
 
 	client := &http.Client{Transport: tr}
 
-	start := time.Now()
-
 	res, err := client.Do(req)
 	if err != nil {
-		return 0, 0, 0, err
+		return nil, err
 	}
-	defer res.Body.Close()
 
-	return res.StatusCode, res.ContentLength, time.Duration(time.Since(start).Truncate(time.Millisecond)), nil
+	return res, nil
 
 }

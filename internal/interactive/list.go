@@ -3,6 +3,7 @@ package interactive
 import (
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"strings"
 
@@ -63,6 +64,7 @@ type model struct {
 	path     []string                // To keep the current path for display
 	back     bool                    // going backwards
 	col      *pcollection.Collection // TODO: DO I need whole collection here?
+	tr       *http.Transport
 }
 
 func (m model) Init() tea.Cmd {
@@ -169,7 +171,7 @@ func additionalShortHelpKeys() []key.Binding {
 	return kbl
 }
 
-func RenderList(c *pcollection.Collection) {
+func (i *Inter) RenderList(c *pcollection.Collection) {
 	items := []list.Item{}
 	for _, k := range c.Schema.Nodes {
 		items = append(items, item(k))
@@ -191,7 +193,8 @@ func RenderList(c *pcollection.Collection) {
 		list:  l,
 		col:   c,
 		stack: make([]item, 0),
-		path:  []string{"Root"}}
+		path:  []string{"Root"},
+		tr:    i.tr}
 
 	if _, err := tea.NewProgram(&m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
