@@ -9,7 +9,7 @@ import (
 )
 
 var interCmd = &cobra.Command{
-	Use:   "interactive",
+	Use:   "client",
 	Short: "Lightweight CLI postman client",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {

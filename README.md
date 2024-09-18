@@ -32,7 +32,7 @@ If you prefer to download a pre-compiled binary for your platform, follow these 
 
 1. Navigate to the [Releases page](https://github.com/kmarkela/duffman/releases) of the DuffMan repository.
 2. Download the appropriate binary for your operating system and architecture.
-3. Unzip the downloaded file and move the binary to your desired location.
+3. Move the binary to your desired location.
 
 
 ## Usage
@@ -45,13 +45,14 @@ Usage:
   DuffMan [command]
 
 Available Commands:
-  fuzz        fuzz all endpoint from Postman Collection
+  fuzz        Fuzz all endpoint from Postman Collection
   help        Help about any command
-  parse       parse only collection file
+  interactive Lightweight CLI postman client
+  parse       Parse only collection file
   version     Print Version
 
 Flags:
-  -f, --collection  string   path to collection file
+  -f, --collection string    path to collection file
   -e, --environment string   path to environment file
   -h, --help                 help for DuffMan
 
