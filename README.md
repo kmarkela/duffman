@@ -58,6 +58,10 @@ Flags:
 Use "DuffMan [command] --help" for more information about a command.
 ```
 
+### Interactive
+
+![demo](./assets/inter.gif)
+
 ### Parse
 
 Parses Postman Collection and Environment files and print Requests/Variables/etc defined within.
