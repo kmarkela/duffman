@@ -63,21 +63,21 @@ func parseBody(b Body) (map[string]string, string, string) {
 		for _, v := range b.FormData {
 			params[v.Key] = v.Value
 		}
-		return params, "multipart/form-data", ""
+		return params, "multipart/form-data", b.Raw
 	}
 
 	if b.URLEncoded != nil {
 		for _, v := range b.URLEncoded {
 			params[v.Key] = v.Value
 		}
-		return params, "application/x-www-form-urlencoded", ""
+		return params, "application/x-www-form-urlencoded", b.Raw
 	}
 
 	switch b.Options.Raw.Lang {
 	case "json":
 		// TODO: log error
 		params, _ := jsonparser.Unmarshal(b.Raw)
-		return params, "application/json", ""
+		return params, "application/json", b.Raw
 	// TODO: add xml parser
 	// case "xml":
 	default:

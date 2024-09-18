@@ -6,11 +6,11 @@
   <img src="./assets/duffman.png" alt="DuffMan"/>
 </p>
 
-DuffMan is a tool written in Go that allows users to parse Postman collections and perform fuzz testing on all the endpoints defined within. This tool is designed to help developers and security analysts discover potential vulnerabilities and ensure robust error handling in their APIs.
+DuffMan is a tool written in Go that allows users to parse Postman collections and perform fuzz testing on all the endpoints defined within. it is also can act as lightweight CLI postman client. This tool is designed to help developers and security analysts discover potential vulnerabilities and ensure robust error handling in their APIs.
 
 ## Install 
 
-There are three ways to install the DuffMan: building from source, using `go get`, or downloading pre-compiled binaries.
+There are three ways to install the DuffMan: building from source, using `go install`, or downloading pre-compiled binaries.
 
 ### Building from Source
 
@@ -32,7 +32,7 @@ If you prefer to download a pre-compiled binary for your platform, follow these 
 
 1. Navigate to the [Releases page](https://github.com/kmarkela/duffman/releases) of the DuffMan repository.
 2. Download the appropriate binary for your operating system and architecture.
-3. Unzip the downloaded file and move the binary to your desired location.
+3. Move the binary to your desired location.
 
 
 ## Usage
@@ -45,18 +45,35 @@ Usage:
   DuffMan [command]
 
 Available Commands:
-  fuzz        fuzz all endpoint from Postman Collection
+  client      Lightweight CLI postman client
+  fuzz        Fuzz all endpoint from Postman Collection
   help        Help about any command
-  parse       parse only collection file
+  parse       Parse only collection file
   version     Print Version
 
 Flags:
-  -f, --collection  string   path to collection file
+  -f, --collection string    path to collection file
   -e, --environment string   path to environment file
   -h, --help                 help for DuffMan
 
 Use "DuffMan [command] --help" for more information about a command.
 ```
+
+### Client
+
+A lightweight CLI postman client. 
+
+![demo](./assets/inter.gif)
+
+Navigation:
+- `enter` - open folder/request 
+- `up/down` - list navigation
+- `esc` - exit
+- `backspace` - go to parrent folder
+- `tab` - swich tabs in request view (`REQUEST`/`VARIABLES`/`RESPONSE`)
+- `ctrl+s` - save variables
+- `ctrl+r` - send request
+- `ctrl+l` - back to requests list
 
 ### Parse
 
