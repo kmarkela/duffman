@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/kmarkela/duffman/internal/logger"
 	"github.com/kmarkela/duffman/internal/pcollection"
 	"github.com/kmarkela/duffman/internal/req"
 )
@@ -24,7 +23,6 @@ func buildReqStr(rp pcollection.Req, env, vars []pcollection.KeyValue) string {
 	encoder := json.NewEncoder(&buf)
 	encoder.SetEscapeHTML(false)
 	encoder.SetIndent("", "   ")
-	logger.Logger.Info("body", "B", r.Body)
 	if err := encoder.Encode(r); err != nil {
 		return err.Error()
 	}
