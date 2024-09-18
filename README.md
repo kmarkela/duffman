@@ -45,9 +45,9 @@ Usage:
   DuffMan [command]
 
 Available Commands:
+  client      Lightweight CLI postman client
   fuzz        Fuzz all endpoint from Postman Collection
   help        Help about any command
-  interactive Lightweight CLI postman client
   parse       Parse only collection file
   version     Print Version
 
@@ -59,7 +59,7 @@ Flags:
 Use "DuffMan [command] --help" for more information about a command.
 ```
 
-### Interactive
+### Client
 
 A lightweight CLI postman client. 
 

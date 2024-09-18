@@ -1,4 +1,4 @@
-package interactive
+package client
 
 import (
 	"encoding/json"

@@ -3,7 +3,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/kmarkela/duffman/internal/interactive"
+	"github.com/kmarkela/duffman/internal/client"
 	"github.com/kmarkela/duffman/internal/pcollection"
 	"github.com/spf13/cobra"
 )
@@ -34,7 +34,7 @@ var interCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		i, err := interactive.New(proxy)
+		i, err := client.New(proxy)
 		if err != nil {
 			log.Fatalln(err)
 		}
