@@ -1,4 +1,4 @@
-package interactive
+package client
 
 import (
 	"net/http"
@@ -7,13 +7,13 @@ import (
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
-type Inter struct {
+type Client struct {
 	tr *http.Transport
 }
 
-func New(proxy string) (Inter, error) {
+func New(proxy string) (Client, error) {
 
-	var inter = Inter{}
+	var inter = Client{}
 	var tr = http.Transport{}
 
 	if proxy != "" {
@@ -33,6 +33,6 @@ func New(proxy string) (Inter, error) {
 
 }
 
-func (i *Inter) Run(col *pcollection.Collection) {
-	i.RenderList(col)
+func (c *Client) Run(col *pcollection.Collection) {
+	c.RenderList(col)
 }

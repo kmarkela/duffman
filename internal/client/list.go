@@ -1,4 +1,4 @@
-package interactive
+package client
 
 import (
 	"fmt"
@@ -171,9 +171,9 @@ func additionalShortHelpKeys() []key.Binding {
 	return kbl
 }
 
-func (i *Inter) RenderList(c *pcollection.Collection) {
+func (c *Client) RenderList(col *pcollection.Collection) {
 	items := []list.Item{}
-	for _, k := range c.Schema.Nodes {
+	for _, k := range col.Schema.Nodes {
 		items = append(items, item(k))
 	}
 
@@ -181,7 +181,7 @@ func (i *Inter) RenderList(c *pcollection.Collection) {
 
 	l := list.New(items, itemDelegate{}, defaultWidth, 30)
 
-	l.Title = c.Schema.Name
+	l.Title = col.Schema.Name
 	l.SetFilteringEnabled(false)
 	l.Styles.Title = titleStyle
 	l.Styles.PaginationStyle = paginationStyle
@@ -191,10 +191,10 @@ func (i *Inter) RenderList(c *pcollection.Collection) {
 
 	m := model{
 		list:  l,
-		col:   c,
+		col:   col,
 		stack: make([]item, 0),
 		path:  []string{"Root"},
-		tr:    i.tr}
+		tr:    c.tr}
 
 	if _, err := tea.NewProgram(&m, tea.WithAltScreen()).Run(); err != nil {
 		fmt.Println("Error running program:", err)
