@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "597be32b-cec1-49b0-8b0b-410d467dd6d4",
+		"name": "Personal Portal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36214428"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://foo.bar/auth",
+							"protocol": "http",
+							"host": [
+								"foo",
+								"bar"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "info",
+			"item": []
+		},
+		{
+			"name": "connections",
+			"item": [
+				{
+					"name": "messages",
+					"item": [
+						{
+							"name": "get msg",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://foo.bar/messages",
+									"protocol": "http",
+									"host": [
+										"foo",
+										"bar"
+									],
+									"path": [
+										"messages"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "send msg",
+							"request": {
+								"method": "POST",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "peoples",
+					"item": []
+				},
+				{
+					"name": "status",
+					"item": []
+				}
+			]
+		},
+		{
+			"name": "posts",
+			"item": []
+		},
+		{
+			"name": "images",
+			"item": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "username",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
