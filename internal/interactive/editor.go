@@ -140,6 +140,7 @@ func (m modelEditor) Init() tea.Cmd {
 func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
 
+	// TODO: refactor
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		width, height, _ := term.GetSize(0)
@@ -158,19 +159,7 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keymap.back):
 			return m.ml, nil
 		case key.Matches(msg, m.keymap.save):
-			var vo varOut
-
-			if err := json.Unmarshal([]byte(m.inputs[1].Value()), &vo); err != nil {
-				m.inputs[0].SetValue(fmt.Sprintf("\nError of parsing VARIABLES. Error Msg: %s", err.Error()))
-				break
-			}
-
-			req := buildReqStr(*m.item.Req, vo.Env, vo.Variables)
-			m.inputs[0].SetValue(req)
-
-			// save vars
-			m.ml.col.Env = vo.Env
-			m.ml.col.Variables = vo.Variables
+			m.saveVars()
 		case key.Matches(msg, m.keymap.next):
 			m.inputs[m.focus].Blur()
 			m.focus++
@@ -181,34 +170,7 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, cmd)
 
 		case key.Matches(msg, m.keymap.send):
-			var ro pcollection.Req
-
-			if err := json.Unmarshal([]byte(m.inputs[0].Value()), &ro); err != nil {
-				m.inputs[0].SetValue(fmt.Sprintf("\nError of parsing REQUEST. Error Msg: %s", err.Error()))
-				break
-			}
-
-			res, err := req.DoRequestFull(ro.URL, nil, ro, m.ml.tr)
-			if err != nil {
-				m.inputs[2].SetValue(fmt.Sprintf("\nError executing request. Error Msg: %s", err.Error()))
-				break
-			}
-			var header string = res.Status
-			for k, v := range res.Header {
-				header = fmt.Sprintf("%s\n%s: %s", header, k, strings.Join(v, ";"))
-			}
-
-			bodyBytes, err := io.ReadAll(res.Body)
-			if err != nil {
-				m.inputs[2].SetValue(fmt.Sprintf("\nError executing request. Error Msg: %s", err.Error()))
-			}
-			res.Body.Close()
-
-			m.inputs[2].CharLimit = len(string(bodyBytes)) + len(header) + 2
-			m.inputs[2].MaxHeight = len(strings.Split(string(bodyBytes), "\n")) + len(res.Header) + 1
-
-			m.inputs[2].SetValue(fmt.Sprintf("%s\n\n%s", header, string(bodyBytes)))
-
+			m.sendReq()
 		}
 	}
 
@@ -220,6 +182,53 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	return m, tea.Batch(cmds...)
+}
+
+func (m *modelEditor) saveVars() {
+	var vo varOut
+
+	if err := json.Unmarshal([]byte(m.inputs[1].Value()), &vo); err != nil {
+		m.inputs[0].SetValue(fmt.Sprintf("\nError of parsing VARIABLES. Error Msg: %s", err.Error()))
+		return
+	}
+
+	req := buildReqStr(*m.item.Req, vo.Env, vo.Variables)
+	m.inputs[0].SetValue(req)
+
+	// save vars
+	m.ml.col.Env = vo.Env
+	m.ml.col.Variables = vo.Variables
+}
+
+func (m *modelEditor) sendReq() {
+	var ro pcollection.Req
+
+	if err := json.Unmarshal([]byte(m.inputs[0].Value()), &ro); err != nil {
+		m.inputs[0].SetValue(fmt.Sprintf("\nError of parsing REQUEST. Error Msg: %s", err.Error()))
+		return
+	}
+
+	var body io.Reader = strings.NewReader(ro.Body)
+	res, err := req.DoRequestFull(ro.URL, body, ro, m.ml.tr)
+	if err != nil {
+		m.inputs[2].SetValue(fmt.Sprintf("\nError executing request. Error Msg: %s", err.Error()))
+		return
+	}
+	var header string = res.Status
+	for k, v := range res.Header {
+		header = fmt.Sprintf("%s\n%s: %s", header, k, strings.Join(v, ";"))
+	}
+
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		m.inputs[2].SetValue(fmt.Sprintf("\nError executing request. Error Msg: %s", err.Error()))
+	}
+	res.Body.Close()
+
+	m.inputs[2].CharLimit = len(string(bodyBytes)) + len(header) + 2
+	m.inputs[2].MaxHeight = len(strings.Split(string(bodyBytes), "\n")) + len(res.Header) + 1
+
+	m.inputs[2].SetValue(fmt.Sprintf("%s\n\n%s", header, string(bodyBytes)))
 }
 
 func (m *modelEditor) sizeInputs() {
