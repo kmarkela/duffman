@@ -11,7 +11,7 @@ import (
 // fuzzCmd represents the fuzz command
 var fuzzCmd = &cobra.Command{
 	Use:   "fuzz",
-	Short: "fuzz all endpoint from Postman Collection",
+	Short: "Fuzz all endpoint from Postman Collection",
 	Long:  `It allows to fuzz muptiple parameters over multiple endpoints`,
 	Run: func(cmd *cobra.Command, args []string) {
 
