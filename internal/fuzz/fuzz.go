@@ -14,6 +14,7 @@ type Fuzzer struct {
 	tr                         *http.Transport
 }
 
+// TODO: refactoring
 func New(workers, maxReq, responseT int, headers []string, proxy string, blacklist []int) (Fuzzer, error) {
 
 	var fuzzer = Fuzzer{}

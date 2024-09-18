@@ -156,6 +156,7 @@ func pwlist(filename string) ([]string, error) {
 
 }
 
+// TODO: req.ResolveVars
 func resolveVars(env, vars []pcollection.KeyValue, req *pcollection.Req) {
 
 	allVars := append(vars, env...)

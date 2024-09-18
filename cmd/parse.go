@@ -11,7 +11,7 @@ import (
 
 var parseCmd = &cobra.Command{
 	Use:   "parse",
-	Short: "parse only collection file",
+	Short: "Parse only collection file",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 

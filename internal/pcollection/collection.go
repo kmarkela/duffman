@@ -5,15 +5,16 @@ type Collection struct {
 	Variables []KeyValue
 	Requests  []Req
 	Env       []KeyValue
+	Schema    Schema
 }
 
 type Req struct {
-	Method      string
-	URL         string
-	Headers     map[string]string
-	Body        string
-	ContentType string
-	Parameters  Parameters
+	Method      string            `json:"Method,omitempty"`
+	URL         string            `json:"URL,omitempty"`
+	Headers     map[string]string `json:"Headers,omitempty"`
+	Body        string            `json:"Body,omitempty"`
+	ContentType string            `json:"ContentType,omitempty"`
+	Parameters  Parameters        `json:"-"`
 }
 
 type Parameters struct {

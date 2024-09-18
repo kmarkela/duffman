@@ -29,7 +29,6 @@ func New(colF, envF string, vars []string) (Collection, error) {
 	if err != nil {
 		return collection, fmt.Errorf("cannot parse provided variables %v. Err: %s", vars, err)
 	}
-
 	for k, v := range vl {
 		for i, j := range collection.Variables {
 			if strings.EqualFold(j.Key, k) {
@@ -40,12 +39,12 @@ func New(colF, envF string, vars []string) (Collection, error) {
 
 	}
 
-	reqLt, err := getReqLt(&rawCollection)
+	reqLt, sc, err := getReqLt(&rawCollection)
 	if err != nil {
 		return collection, fmt.Errorf("cannot process Collection. Err: %s", err)
 	}
-
 	collection.Requests = reqLt
+	collection.Schema = sc
 
 	if envF == "" {
 		return collection, nil
@@ -56,7 +55,6 @@ func New(colF, envF string, vars []string) (Collection, error) {
 		return collection, fmt.Errorf("cannot open Environment file. Err: %s", err)
 	}
 	defer jsonE.Close()
-
 	byteE, _ := io.ReadAll(jsonE)
 	var env Environment
 	if err := json.Unmarshal(byteE, &env); err != nil {
@@ -68,19 +66,30 @@ func New(colF, envF string, vars []string) (Collection, error) {
 	return collection, nil
 }
 
-func getReqLt(rc *RawCollection) ([]Req, error) {
+func getReqLt(rc *RawCollection) ([]Req, Schema, error) {
 
 	var rlt []Req
+	var sc Schema = Schema{}
+	sc.Name = rc.Info.Name
+	sc.Description = rc.Info.Description
+	sc.Schema = rc.Info.Schema
 
 	for _, v := range rc.Items {
-		tr, err := v.i2ReqLt()
+
+		n := Node{}
+		n.Name = v.Name
+
+		tr, err := v.i2ReqLt(&n)
 		if err != nil {
-			return nil, err
+			return nil, sc, err
 		}
+
 		rlt = append(rlt, tr...)
+
+		sc.Nodes = append(sc.Nodes, n)
 	}
 
-	return rlt, nil
+	return rlt, sc, nil
 
 }
 
