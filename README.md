@@ -6,7 +6,7 @@
   <img src="./assets/duffman.png" alt="DuffMan"/>
 </p>
 
-DuffMan is a tool written in Go that allows users to parse Postman collections and perform fuzz testing on all the endpoints defined within. This tool is designed to help developers and security analysts discover potential vulnerabilities and ensure robust error handling in their APIs.
+DuffMan is a tool written in Go that allows users to parse Postman collections and perform fuzz testing on all the endpoints defined within. it is also can act as lightweight CLI postman client. This tool is designed to help developers and security analysts discover potential vulnerabilities and ensure robust error handling in their APIs.
 
 ## Install 
 
@@ -60,7 +60,19 @@ Use "DuffMan [command] --help" for more information about a command.
 
 ### Interactive
 
+A lightweight CLI postman client. 
+
 ![demo](./assets/inter.gif)
+
+Navigation:
+- `enter` - open folder/request 
+- `up/down` - list navigation
+- `esc` - exit
+- `backspace` - go to parrent folder
+- `tab` - swich tabs in request view (`REQUEST`/`VARIABLES`/`RESPONSE`)
+- `ctrl+s` - save variables
+- `ctrl+r` - send request
+- `ctrl+l` - back to requests list
 
 ### Parse
 
