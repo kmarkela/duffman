@@ -11,7 +11,6 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/kmarkela/duffman/internal/logger"
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
@@ -173,7 +172,7 @@ func additionalShortHelpKeys() []key.Binding {
 }
 
 func (c *Client) RenderList(col *pcollection.Collection) {
-	logger.Logger.Info("render")
+	// logger.Logger.Info("render")
 	items := []list.Item{}
 	for _, k := range col.Schema.Nodes {
 		items = append(items, item(k))
