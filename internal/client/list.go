@@ -172,6 +172,7 @@ func additionalShortHelpKeys() []key.Binding {
 }
 
 func (c *Client) RenderList(col *pcollection.Collection) {
+	// logger.Logger.Info("render")
 	items := []list.Item{}
 	for _, k := range col.Schema.Nodes {
 		items = append(items, item(k))

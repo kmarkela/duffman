@@ -27,6 +27,9 @@ func init() {
 
 func Execute() {
 
+	// logger.Init()
+	// logger.Logger.Info("Starting...")
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
