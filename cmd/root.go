@@ -3,7 +3,6 @@ package cmd
 import (
 	"os"
 
-	"github.com/kmarkela/duffman/internal/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -28,8 +27,8 @@ func init() {
 
 func Execute() {
 
-	logger.Init()
-	logger.Logger.Info("Starting...")
+	// logger.Init()
+	// logger.Logger.Info("Starting...")
 
 	err := rootCmd.Execute()
 	if err != nil {
