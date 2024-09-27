@@ -40,7 +40,7 @@ func Init() {
 		TimeFormat:      time.Kitchen,
 		// Prefix:          "Baking 🍪 ",
 	})
-	Logger.SetLevel(log.InfoLevel)
+	Logger.SetLevel(log.DebugLevel)
 	Logger.SetTimeFormat("2006-01-02 15:04:05")
 
 }
