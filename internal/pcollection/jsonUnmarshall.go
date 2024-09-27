@@ -17,6 +17,7 @@ type Item struct {
 	Name    string   `json:"name"`
 	Item    []Item   `json:"item,omitempty"`
 	Request *Request `json:"request,omitempty"`
+	Auth    *Auth    `json:"auth,omitempty"`
 }
 
 type Request struct {
@@ -59,4 +60,8 @@ type Info struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Schema      string `json:"schema"`
+}
+
+type Auth struct {
+	Type string `json:"type"`
 }
