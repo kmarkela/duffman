@@ -17,6 +17,7 @@ type Item struct {
 	Name    string   `json:"name"`
 	Item    []Item   `json:"item,omitempty"`
 	Request *Request `json:"request,omitempty"`
+	Auth    *Auth    `json:"auth,omitempty"`
 }
 
 type Request struct {
