@@ -15,6 +15,7 @@ type Req struct {
 	Body        string            `json:"Body,omitempty"`
 	ContentType string            `json:"ContentType,omitempty"`
 	Parameters  Parameters        `json:"-"`
+	Auth        *Auth             `json:"-"`
 }
 
 type Parameters struct {

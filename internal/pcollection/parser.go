@@ -79,7 +79,7 @@ func getReqLt(rc *RawCollection) ([]Req, Schema, error) {
 		n := Node{}
 		n.Name = v.Name
 
-		tr, err := v.i2ReqLt(&n)
+		tr, err := v.i2ReqLt(&n, nil)
 		if err != nil {
 			return nil, sc, err
 		}
