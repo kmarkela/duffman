@@ -10,7 +10,7 @@ import (
 
 type varOut struct {
 	Variables []pcollection.KeyValue `json:"Variables,omitempty"`
-	Env       []pcollection.KeyValue `json:"Enviroment,omitempty"`
+	Env       []pcollection.KeyValue `json:"Environment,omitempty"`
 }
 
 func buildReqStr(rp pcollection.Req, env, vars []pcollection.KeyValue) string {
