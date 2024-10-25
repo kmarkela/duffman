@@ -1,7 +1,5 @@
 package pcollection
 
-import "fmt"
-
 // The file contains structs to unmarshal Collection and Environment Json files.
 
 type RawCollection struct {
@@ -62,30 +60,4 @@ type Info struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Schema      string `json:"schema"`
-}
-
-type AuthType int
-
-const (
-	None AuthType = iota
-	Oauth2
-	Bearer
-)
-
-type Auth struct {
-	Type   string     `json:"type"`
-	Oauth2 []KeyValue `json:"oauth2"`
-	Bearer []KeyValue `json:"bearer"`
-}
-
-func (a Auth) Get() (AuthType, []KeyValue, error) {
-
-	switch a.Type {
-	case "bearer":
-		return Oauth2, a.Bearer, nil
-	case "oauth2":
-		return Bearer, a.Oauth2, nil
-	}
-
-	return None, []KeyValue{}, fmt.Errorf("Auth method (%s) is not implemented", a.Type)
 }
