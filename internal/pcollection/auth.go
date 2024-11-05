@@ -12,13 +12,17 @@ type KeyValueType struct {
 	Type  string      `json:"type"`
 }
 
-type AuthType int
+// type AuthType int
 
-const (
-	None AuthType = iota
-	Oauth2
-	Bearer
-)
+// func (at AuthType) String() string {
+
+// }
+
+// const (
+// 	None AuthType = iota
+// 	Oauth2
+// 	Bearer
+// )
 
 type Auth struct {
 	Type   string         `json:"type"`
@@ -26,14 +30,14 @@ type Auth struct {
 	Bearer []KeyValueType `json:"bearer"`
 }
 
-func (a Auth) Get() (AuthType, []KeyValueType, error) {
+func (a Auth) Get() (string, []KeyValueType, error) {
 
 	switch a.Type {
 	case "bearer":
-		return Oauth2, a.Bearer, nil
+		return "Bearer", a.Bearer, nil
 	case "oauth2":
-		return Bearer, a.Oauth2, nil
+		return "Oauth2", a.Oauth2, nil
 	}
 
-	return None, []KeyValueType{}, fmt.Errorf("Auth method (%s) is not implemented", a.Type)
+	return "None", []KeyValueType{}, fmt.Errorf("Auth method (%s) is not implemented", a.Type)
 }
