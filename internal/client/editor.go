@@ -124,7 +124,7 @@ func newModel(i item, ml *model) modelEditor {
 	me.inputs[0].MaxHeight = len(strings.Split(req, "\n"))
 	me.inputs[0].SetValue(req)
 
-	vars := buildVarStr(*ml.col)
+	vars := buildVarStr(*ml.col, *i.Req)
 	me.inputs[1].CharLimit = 2 * len(vars)
 	me.inputs[1].MaxHeight = len(strings.Split(vars, "\n"))
 	me.inputs[1].SetValue(vars)
