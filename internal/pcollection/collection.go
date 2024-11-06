@@ -1,10 +1,15 @@
 package pcollection
 
+import (
+	"github.com/kmarkela/duffman/internal/auth"
+	"github.com/kmarkela/duffman/internal/internalTypes"
+)
+
 // filtered out version
 type Collection struct {
-	Variables []KeyValue
+	Variables []internalTypes.KeyValue
 	Requests  []Req
-	Env       []KeyValue
+	Env       []internalTypes.KeyValue
 	Schema    Schema
 }
 
@@ -15,7 +20,7 @@ type Req struct {
 	Body        string            `json:"Body,omitempty"`
 	ContentType string            `json:"ContentType,omitempty"`
 	Parameters  Parameters        `json:"-"`
-	Auth        *Auth             `json:"-"`
+	Auth        *auth.Auth        `json:"-"`
 }
 
 type Parameters struct {

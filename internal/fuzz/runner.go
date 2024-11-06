@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/kmarkela/duffman/internal/internalTypes"
 	"github.com/kmarkela/duffman/internal/output"
 	"github.com/kmarkela/duffman/internal/pcollection"
 	"github.com/kmarkela/duffman/pkg/jsonparser"
@@ -157,7 +158,7 @@ func pwlist(filename string) ([]string, error) {
 }
 
 // TODO: req.ResolveVars
-func resolveVars(env, vars []pcollection.KeyValue, req *pcollection.Req) {
+func resolveVars(env, vars []internalTypes.KeyValue, req *pcollection.Req) {
 
 	allVars := append(vars, env...)
 

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kmarkela/duffman/internal/internalTypes"
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
 
@@ -25,7 +26,8 @@ func CreateEndpoint(url string, getParam map[string]string, pathParam map[string
 	return endpoint
 }
 
-func ResolveVars(env, vars []pcollection.KeyValue, req *pcollection.Req) {
+// TODO: Return instead of modify
+func ResolveVars(env, vars []internalTypes.KeyValue, req *pcollection.Req) {
 
 	allVars := append(vars, env...)
 
