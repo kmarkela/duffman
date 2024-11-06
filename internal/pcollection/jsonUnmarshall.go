@@ -1,5 +1,7 @@
 package pcollection
 
+import "github.com/kmarkela/duffman/internal/auth"
+
 // The file contains structs to unmarshal Collection and Environment Json files.
 
 type RawCollection struct {
@@ -14,10 +16,10 @@ type KeyValue struct {
 }
 
 type Item struct {
-	Name    string   `json:"name"`
-	Item    []Item   `json:"item,omitempty"`
-	Request *Request `json:"request,omitempty"`
-	Auth    *Auth    `json:"auth,omitempty"`
+	Name    string     `json:"name"`
+	Item    []Item     `json:"item,omitempty"`
+	Request *Request   `json:"request,omitempty"`
+	Auth    *auth.Auth `json:"auth,omitempty"`
 }
 
 type Request struct {
