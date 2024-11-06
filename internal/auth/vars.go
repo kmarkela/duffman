@@ -7,7 +7,9 @@ import (
 	"github.com/kmarkela/duffman/internal/internalTypes"
 )
 
-func ResolveVars(env, vars []internalTypes.KeyValue, auth *Auth) error {
+func ResolveVars(env, vars []internalTypes.KeyValue, auth *Auth) Auth {
+
+	var result = Auth{Type: auth.Type, Details: map[string]string{}}
 
 	allVars := append(vars, env...)
 
@@ -16,9 +18,16 @@ func ResolveVars(env, vars []internalTypes.KeyValue, auth *Auth) error {
 		vk := fmt.Sprintf("{{%s}}", v.Key)
 
 		for kd, vd := range auth.Details {
-			auth.Details[kd] = strings.ReplaceAll(vd, vk, v.Value)
-		}
-	}
 
-	return nil
+			if _, ok := result.Details[kd]; ok {
+				result.Details[kd] = strings.ReplaceAll(result.Details[kd], vk, v.Value)
+				continue
+			}
+
+			result.Details[kd] = strings.ReplaceAll(vd, vk, v.Value)
+
+		}
+
+	}
+	return result
 }

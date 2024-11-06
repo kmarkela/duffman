@@ -26,6 +26,7 @@ func CreateEndpoint(url string, getParam map[string]string, pathParam map[string
 	return endpoint
 }
 
+// TODO: Return instead of modify
 func ResolveVars(env, vars []internalTypes.KeyValue, req *pcollection.Req) {
 
 	allVars := append(vars, env...)
