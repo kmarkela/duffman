@@ -39,8 +39,8 @@ func buildVarStr(col pcollection.Collection, rp pcollection.Req) string {
 
 	vo.Variables = col.Variables
 	vo.Env = col.Env
-	auth.ResolveVars(col.Env, col.Variables, rp.Auth)
-	vo.Auth = rp.Auth
+	auth := auth.ResolveVars(col.Env, col.Variables, rp.Auth)
+	vo.Auth = &auth
 
 	marshaled, err := json.MarshalIndent(vo, "", "   ")
 	if err != nil {
