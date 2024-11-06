@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 
 	"github.com/kmarkela/duffman/internal/auth"
+	"github.com/kmarkela/duffman/internal/internalTypes"
 	"github.com/kmarkela/duffman/internal/pcollection"
 	"github.com/kmarkela/duffman/internal/req"
 )
 
 type varOut struct {
-	Variables []pcollection.KeyValue `json:"Variables,omitempty"`
-	Env       []pcollection.KeyValue `json:"Environment,omitempty"`
-	Auth      *auth.Auth             `json:"Auth,omitempty"`
+	Variables []internalTypes.KeyValue `json:"Variables,omitempty"`
+	Env       []internalTypes.KeyValue `json:"Environment,omitempty"`
+	Auth      *auth.Auth               `json:"Auth,omitempty"`
 }
 
-func buildReqStr(rp pcollection.Req, env, vars []pcollection.KeyValue) string {
+func buildReqStr(rp pcollection.Req, env, vars []internalTypes.KeyValue) string {
 
 	r := req.DeepCopyReq(&rp)
 
@@ -38,6 +39,7 @@ func buildVarStr(col pcollection.Collection, rp pcollection.Req) string {
 
 	vo.Variables = col.Variables
 	vo.Env = col.Env
+	auth.ResolveVars(col.Env, col.Variables, rp.Auth)
 	vo.Auth = rp.Auth
 
 	marshaled, err := json.MarshalIndent(vo, "", "   ")

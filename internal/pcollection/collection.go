@@ -1,12 +1,15 @@
 package pcollection
 
-import "github.com/kmarkela/duffman/internal/auth"
+import (
+	"github.com/kmarkela/duffman/internal/auth"
+	"github.com/kmarkela/duffman/internal/internalTypes"
+)
 
 // filtered out version
 type Collection struct {
-	Variables []KeyValue
+	Variables []internalTypes.KeyValue
 	Requests  []Req
-	Env       []KeyValue
+	Env       []internalTypes.KeyValue
 	Schema    Schema
 }
 
