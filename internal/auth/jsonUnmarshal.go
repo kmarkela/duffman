@@ -16,24 +16,35 @@ type KVT struct {
 	Type  string      `json:"type"`
 }
 
-// type AuthType int
+type AuthType int
 
-// func (at AuthType) String() string {
+const (
+	None AuthType = iota
+	Oauth2
+	// Bearer
+)
 
-// }
+func (at AuthType) String() string {
 
-// const (
-// 	None AuthType = iota
-// 	Oauth2
-// 	Bearer
-// )
+	switch at {
+	case None:
+		return "None"
+	case Oauth2:
+		return "Oauth2"
+		// case Bearer:
+		// 	return "Bearer"
+	}
+
+	return "NotSupported"
+
+}
 
 func (a *Auth) UnmarshalJSON(data []byte) error {
 
 	var temp struct {
 		Type   string `json:"type"`
 		Oauth2 []KVT  `json:"oauth2"`
-		Bearer []KVT  `json:"bearer"`
+		// Bearer []KVT  `json:"bearer"`
 	}
 
 	if err := json.Unmarshal(data, &temp); err != nil {
@@ -45,7 +56,7 @@ func (a *Auth) UnmarshalJSON(data []byte) error {
 	switch temp.Type {
 	case "oauth2":
 		details = getDet(temp.Oauth2)
-	default:
+		// default:
 	}
 
 	*a = Auth{Type: temp.Type, Details: details}
@@ -65,15 +76,3 @@ func getDet(k []KVT) map[string]string {
 
 	return result
 }
-
-// func (a Auth) Get() (string, []KeyValueType, error) {
-
-// 	switch a.Type {
-// 	case "bearer":
-// 		return "Bearer", a.Bearer, nil
-// 	case "oauth2":
-// 		return "Oauth2", a.Oauth2, nil
-// 	}
-
-// 	return "None", []KeyValueType{}, fmt.Errorf("Auth method (%s) is not implemented", a.Type)
-// }
