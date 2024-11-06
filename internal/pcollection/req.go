@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/kmarkela/duffman/internal/internalTypes"
 	"github.com/kmarkela/duffman/pkg/jsonparser"
 )
 
@@ -46,7 +47,7 @@ func buildReq(r *Request) Req {
 
 }
 
-func parseVariables(vars []KeyValue) map[string]string {
+func parseVariables(vars []internalTypes.KeyValue) map[string]string {
 
 	rv := make(map[string]string)
 	for _, v := range vars {

@@ -1,6 +1,8 @@
 package pcollection
 
-func (i *Item) i2ReqLt(n *Node, auth *Auth) ([]Req, error) {
+import "github.com/kmarkela/duffman/internal/auth"
+
+func (i *Item) i2ReqLt(n *Node, auth *auth.Auth) ([]Req, error) {
 	var lr []Req
 	// logger.Logger.Warn("i2ReqLt Called", "Name", i.Name, "auth", auth)
 

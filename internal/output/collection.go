@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/kmarkela/duffman/internal/internalTypes"
 	"github.com/kmarkela/duffman/internal/pcollection"
 	"github.com/kmarkela/duffman/pkg/jsonparser"
 )
@@ -18,7 +19,7 @@ const (
 	Full
 )
 
-func printKV(tab int, s string, lv []pcollection.KeyValue) {
+func printKV(tab int, s string, lv []internalTypes.KeyValue) {
 	for _, v := range lv {
 		fmt.Printf("%s%s %s: %s\n", strings.Repeat(" ", tab), s, v.Key, v.Value)
 	}
