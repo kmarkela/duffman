@@ -3,9 +3,13 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/kmarkela/duffman/internal/internalTypes"
 )
+
+type KVT struct {
+	Key   string      `json:"key"`
+	Value interface{} `json:"value"`
+	Type  string      `json:"type"`
+}
 
 type Auth struct {
 	Type    string            `json:"Type"`
@@ -38,13 +42,13 @@ func (at AuthType) String() string {
 func (a *Auth) UnmarshalJSON(data []byte) error {
 
 	var temp struct {
-		Type   string                   `json:"type"`
-		Oauth2 []internalTypes.KeyValue `json:"oauth2"`
+		Type   string `json:"type"`
+		Oauth2 []KVT  `json:"oauth2"`
 		// Bearer []KVT  `json:"bearer"`
 	}
 
 	if err := json.Unmarshal(data, &temp); err != nil {
-		return nil
+		return err
 	}
 
 	var details map[string]string
@@ -61,7 +65,7 @@ func (a *Auth) UnmarshalJSON(data []byte) error {
 
 }
 
-func getDet(k []internalTypes.KeyValue) map[string]string {
+func getDet(k []KVT) map[string]string {
 
 	result := map[string]string{}
 
