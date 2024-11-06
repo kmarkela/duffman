@@ -1,6 +1,9 @@
 package auth
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type Auth struct {
 	Type    string            `json:"Type"`
@@ -37,16 +40,30 @@ func (a *Auth) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
+	var details map[string]string
+
 	switch temp.Type {
 	case "oauth2":
-
+		details = getDet(temp.Oauth2)
 	default:
 	}
 
-	*a = Auth{Type: temp.Type}
+	*a = Auth{Type: temp.Type, Details: details}
 
 	return nil
 
+}
+
+func getDet(k []KVT) map[string]string {
+
+	result := map[string]string{}
+
+	for _, el := range k {
+		// convert value to string
+		result[el.Key] = fmt.Sprintf("%v", el.Value)
+	}
+
+	return result
 }
 
 // func (a Auth) Get() (string, []KeyValueType, error) {
