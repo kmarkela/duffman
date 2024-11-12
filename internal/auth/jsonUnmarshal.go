@@ -21,7 +21,7 @@ type AuthType int
 const (
 	None AuthType = iota
 	Oauth2
-	// Bearer
+	Bearer
 )
 
 func (at AuthType) String() string {
@@ -31,8 +31,8 @@ func (at AuthType) String() string {
 		return "None"
 	case Oauth2:
 		return "Oauth2"
-		// case Bearer:
-		// 	return "Bearer"
+	case Bearer:
+		return "Bearer"
 	}
 
 	return "NotSupported"
@@ -44,7 +44,7 @@ func (a *Auth) UnmarshalJSON(data []byte) error {
 	var temp struct {
 		Type   string `json:"type"`
 		Oauth2 []KVT  `json:"oauth2"`
-		// Bearer []KVT  `json:"bearer"`
+		Bearer []KVT  `json:"bearer"`
 	}
 
 	if err := json.Unmarshal(data, &temp); err != nil {
@@ -56,6 +56,9 @@ func (a *Auth) UnmarshalJSON(data []byte) error {
 	switch temp.Type {
 	case "oauth2":
 		details = getDet(temp.Oauth2)
+	case "bearer":
+		details = getDet(temp.Bearer)
+
 		// default:
 	}
 
