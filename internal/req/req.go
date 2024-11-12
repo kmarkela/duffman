@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kmarkela/duffman/internal/auth"
 	"github.com/kmarkela/duffman/internal/internalTypes"
 	"github.com/kmarkela/duffman/internal/pcollection"
 )
@@ -122,6 +123,10 @@ func DoRequestFull(endpoint string, body io.Reader, r pcollection.Req, tr *http.
 
 	if r.ContentType != "" {
 		req.Header.Set("Content-Type", r.ContentType)
+	}
+
+	if r.Auth != nil {
+		auth.Do(req, r.Auth)
 	}
 
 	client := &http.Client{Transport: tr}
