@@ -25,6 +25,7 @@ type Request struct {
 	Header []internalTypes.KeyValue `json:"header,omitempty"`
 	Body   Body                     `json:"body,omitempty"`
 	URL    URL                      `json:"url"`
+	Auth   *auth.Auth               `json:"auth,omitempty"`
 }
 
 type URL struct {
