@@ -1,10 +1,11 @@
 package pcollection
 
-import "github.com/kmarkela/duffman/internal/auth"
+import (
+	"github.com/kmarkela/duffman/internal/auth"
+)
 
 func (i *Item) i2ReqLt(n *Node, auth *auth.Auth) ([]Req, error) {
 	var lr []Req
-	// logger.Logger.Warn("i2ReqLt Called", "Name", i.Name, "auth", auth)
 
 	if i.Auth != nil {
 		auth = i.Auth
@@ -16,7 +17,12 @@ func (i *Item) i2ReqLt(n *Node, auth *auth.Auth) ([]Req, error) {
 		r := buildReq(i.Request)
 		n.Req = &r
 
-		n.Req.Auth = auth
+		if i.Request.Auth != nil {
+			r.Auth = i.Request.Auth
+		} else {
+			r.Auth = auth
+		}
+
 		lr = append(lr, r)
 	}
 

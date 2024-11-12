@@ -11,6 +11,10 @@ func ResolveVars(env, vars []internalTypes.KeyValue, auth *Auth) Auth {
 
 	var result = Auth{Type: auth.Type, Details: map[string]string{}}
 
+	for kd, vd := range auth.Details {
+		result.Details[kd] = vd
+	}
+
 	allVars := append(vars, env...)
 
 	for _, v := range allVars {
