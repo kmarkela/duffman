@@ -41,6 +41,18 @@ func (at AuthType) String() string {
 
 func (a *Auth) UnmarshalJSON(data []byte) error {
 
+	// check if alredy in custom format
+	var tempPrFormat struct {
+		Type    string            `json:"Type"`
+		Details map[string]string `json:"Details"`
+	}
+
+	json.Unmarshal(data, &tempPrFormat)
+	if tempPrFormat.Details != nil {
+		*a = Auth{Type: tempPrFormat.Type, Details: tempPrFormat.Details}
+		return nil
+	}
+
 	var temp struct {
 		Type   string `json:"type"`
 		Oauth2 []KVT  `json:"oauth2"`
@@ -67,6 +79,11 @@ func (a *Auth) UnmarshalJSON(data []byte) error {
 	return nil
 
 }
+
+// func (a Auth) MarshalJSON() ([]byte, error) {
+// 	type Alias Auth
+// 	return json.Marshal(Alias(a))
+// }
 
 func getDet(k []KVT) map[string]string {
 

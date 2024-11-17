@@ -32,6 +32,12 @@ func ResolveVars(env, vars []internalTypes.KeyValue, req *pcollection.Req) {
 
 	allVars := append(vars, env...)
 
+	if req.Auth != nil {
+		// TODO: refactor
+		auth := auth.ResolveVars(env, vars, req.Auth)
+		req.Auth = &auth
+	}
+
 	for _, v := range allVars {
 
 		vk := fmt.Sprintf("{{%s}}", v.Key)
@@ -75,6 +81,7 @@ func DeepCopyReq(original *pcollection.Req) *pcollection.Req {
 			Post: make(map[string]string),
 			Path: make(map[string]string),
 		},
+		Auth: original.Auth,
 	}
 
 	// Copy map values for Headers
