@@ -11,12 +11,12 @@ import (
 
 func Do(req *http.Request, auth *Auth) error {
 
-	switch auth.Type {
+	switch strings.ToLower(auth.Type) {
 
-	case "Oauth2":
+	case "oauth2":
 		doOauth2(req, auth.Details)
-	case "Bearer":
-		doBearer(req, auth.Details["bearer"])
+	case "bearer":
+		doBearer(req, auth.Details["token"])
 	}
 
 	return nil
@@ -59,7 +59,7 @@ func doOauth2(req *http.Request, det map[string]string) error {
 	}
 	accessToken, ok := tokenResponse["access_token"].(string)
 	if !ok {
-		return fmt.Errorf("auth error. %s", err.Error())
+		return fmt.Errorf("auth error. No Tocken in responce")
 	}
 
 	doBearer(req, accessToken)
