@@ -16,8 +16,8 @@ type varOut struct {
 }
 
 func buildReqStr(rp pcollection.Req, env, vars []internalTypes.KeyValue) string {
-
 	r := req.DeepCopyReq(&rp)
+
 	req.ResolveVars(env, vars, r)
 	r.URL = req.CreateEndpoint(r.URL, r.Parameters.Get, r.Parameters.Path)
 	var buf bytes.Buffer
@@ -27,6 +27,7 @@ func buildReqStr(rp pcollection.Req, env, vars []internalTypes.KeyValue) string 
 	if err := encoder.Encode(r); err != nil {
 		return err.Error()
 	}
+
 	return buf.String()
 
 }

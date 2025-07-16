@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -48,7 +49,7 @@ var (
 )
 
 type keymap struct {
-	next, send, back, save, quit key.Binding
+	next, send, back, save, saveToFile, quit key.Binding
 }
 
 func newTextarea() textarea.Model {
@@ -102,6 +103,10 @@ func newModel(i item, ml *model) modelEditor {
 			save: key.NewBinding(
 				key.WithKeys("ctrl+s"),
 				key.WithHelp("ctrl+s", "save vars"),
+			),
+			saveToFile: key.NewBinding(
+				key.WithKeys("ctrl+f"),
+				key.WithHelp("ctrl+f", "save response to file"),
 			),
 			quit: key.NewBinding(
 				key.WithKeys("esc", "ctrl+c"),
@@ -160,6 +165,8 @@ func (m modelEditor) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.ml, nil
 		case key.Matches(msg, m.keymap.save):
 			m.saveVars()
+		case key.Matches(msg, m.keymap.saveToFile):
+			m.saveToFile()
 		case key.Matches(msg, m.keymap.next):
 			m.inputs[m.focus].Blur()
 			m.focus++
@@ -200,6 +207,13 @@ func (m *modelEditor) saveVars() {
 	m.ml.col.Variables = vo.Variables
 }
 
+func (m *modelEditor) saveToFile() {
+	if err := os.WriteFile("response.txt", []byte(m.inputs[2].Value()), 0644); err != nil {
+		m.inputs[2].SetValue(fmt.Sprintf("\nCannot write to file. Err: %s", err.Error()))
+	}
+
+}
+
 func (m *modelEditor) sendReq() {
 	var ro pcollection.Req
 
@@ -208,8 +222,8 @@ func (m *modelEditor) sendReq() {
 		return
 	}
 
-	var body io.Reader = strings.NewReader(ro.Body)
-	res, err := req.DoRequestFull(ro.URL, body, ro, m.ml.tr)
+	// var body io.Reader = strings.NewReader(ro.Body)
+	res, err := req.DoRequestFull(ro.URL, ro.Body, ro, m.ml.tr)
 	if err != nil {
 		m.inputs[2].SetValue(fmt.Sprintf("\nError executing request. Error Msg: %s", err.Error()))
 		return
@@ -226,7 +240,7 @@ func (m *modelEditor) sendReq() {
 	res.Body.Close()
 
 	m.inputs[2].CharLimit = len(string(bodyBytes)) + len(header) + 2
-	m.inputs[2].MaxHeight = len(strings.Split(string(bodyBytes), "\n")) + len(res.Header) + 1
+	m.inputs[2].MaxHeight = len(strings.Split(string(bodyBytes), "\n")) + len(res.Header) + 2
 
 	m.inputs[2].SetValue(fmt.Sprintf("%s\n\n%s", header, string(bodyBytes)))
 }
@@ -241,6 +255,9 @@ func (m *modelEditor) sizeInputs() {
 	m.inputs[0].SetHeight(h*3 - 2)
 	m.inputs[1].SetHeight(h)
 
+	m.inputs[1].MaxHeight = 0
+	m.inputs[1].MaxWidth = 0
+
 	m.inputs[2].SetHeight(m.height - helpHeight - 1)
 }
 
@@ -249,12 +266,16 @@ func (m modelEditor) View() string {
 	help := m.help.ShortHelpView([]key.Binding{
 		m.keymap.next,
 		m.keymap.save,
+		m.keymap.saveToFile,
 		m.keymap.send,
 		m.keymap.back,
 		m.keymap.quit,
 	})
 
 	var views []string
+
+	// unlimited imput for variables
+	m.inputs[1].CharLimit = 0
 
 	// Combine title and input view
 	editorView := lipgloss.JoinVertical(lipgloss.Top,
