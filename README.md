@@ -73,6 +73,7 @@ Navigation:
 - `tab` - swich tabs in request view (`REQUEST`/`VARIABLES`/`RESPONSE`)
 - `ctrl+s` - save variables
 - `ctrl+r` - send request
+- `ctrl+f` - save response to file (it is save in current working dir as `response.txt`)
 - `ctrl+l` - back to requests list
 
 ### Parse

@@ -1,15 +1,19 @@
 package req
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
 	"github.com/kmarkela/duffman/internal/auth"
 	"github.com/kmarkela/duffman/internal/internalTypes"
 	"github.com/kmarkela/duffman/internal/pcollection"
+	"github.com/kmarkela/duffman/pkg/jsonparser"
 )
 
 func CreateEndpoint(url string, getParam map[string]string, pathParam map[string]string) string {
@@ -31,6 +35,12 @@ func CreateEndpoint(url string, getParam map[string]string, pathParam map[string
 func ResolveVars(env, vars []internalTypes.KeyValue, req *pcollection.Req) {
 
 	allVars := append(vars, env...)
+
+	if req.Auth != nil {
+		// TODO: refactor
+		auth := auth.ResolveVars(env, vars, req.Auth)
+		req.Auth = &auth
+	}
 
 	for _, v := range allVars {
 
@@ -75,6 +85,7 @@ func DeepCopyReq(original *pcollection.Req) *pcollection.Req {
 			Post: make(map[string]string),
 			Path: make(map[string]string),
 		},
+		Auth: original.Auth,
 	}
 
 	// Copy map values for Headers
@@ -96,7 +107,7 @@ func DeepCopyReq(original *pcollection.Req) *pcollection.Req {
 	return copy
 }
 
-func DoRequest(endpoint string, body io.Reader, r pcollection.Req, tr *http.Transport) (int, int64, time.Duration, error) {
+func DoRequest(endpoint string, body string, r pcollection.Req, tr *http.Transport) (int, int64, time.Duration, error) {
 
 	start := time.Now()
 
@@ -110,7 +121,16 @@ func DoRequest(endpoint string, body io.Reader, r pcollection.Req, tr *http.Tran
 
 }
 
-func DoRequestFull(endpoint string, body io.Reader, r pcollection.Req, tr *http.Transport) (*http.Response, error) {
+func DoRequestFull(endpoint string, b string, r pcollection.Req, tr *http.Transport) (*http.Response, error) {
+	var err error
+	var body io.Reader = strings.NewReader(b)
+
+	if b == "" && (r.Method == "POST") {
+		body, err = encodeBody(r)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	req, err := http.NewRequest(r.Method, endpoint, body)
 	if err != nil {
@@ -138,4 +158,45 @@ func DoRequestFull(endpoint string, body io.Reader, r pcollection.Req, tr *http.
 
 	return res, nil
 
+}
+
+func encodeBody(r pcollection.Req) (io.Reader, error) {
+
+	// to restore param back
+	postParam := make(map[string]string)
+	for k, v := range r.Parameters.Post {
+		postParam[k] = v
+	}
+
+	// encode Form
+	if strings.HasPrefix(r.ContentType, "application/x-www-form-urlencoded") {
+		form := url.Values{}
+		for k, v := range postParam {
+			form.Add(k, v)
+		}
+
+		return strings.NewReader(form.Encode()), nil
+	}
+
+	if strings.HasPrefix(r.ContentType, "multipart/form-data") {
+		var buf bytes.Buffer
+		writer := multipart.NewWriter(&buf)
+		for k, v := range postParam {
+			writer.WriteField(k, v)
+			// TODO: error handler
+			// err := writer.WriteField(k, v)
+
+		}
+		r.ContentType = writer.FormDataContentType()
+		return &buf, nil
+	}
+
+	// encode json
+	if r.ContentType == "application/json" {
+		b, _ := jsonparser.Marshal(postParam)
+		return bytes.NewBuffer(b), nil
+	}
+
+	// unknown content type
+	return strings.NewReader(r.Body), fmt.Errorf("no encoder for: %s", r.ContentType)
 }
